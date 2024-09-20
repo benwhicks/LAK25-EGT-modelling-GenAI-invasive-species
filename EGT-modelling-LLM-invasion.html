@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Modelling peer feedback environments with LLM invasion</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="EGT-modelling-LLM-invasion_files/libs/clipboard/clipboard.min.js"></script>
+<script src="EGT-modelling-LLM-invasion_files/libs/quarto-html/quarto.js"></script>
+<script src="EGT-modelling-LLM-invasion_files/libs/quarto-html/popper.min.js"></script>
+<script src="EGT-modelling-LLM-invasion_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="EGT-modelling-LLM-invasion_files/libs/quarto-html/anchor.min.js"></script>
+<link href="EGT-modelling-LLM-invasion_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="EGT-modelling-LLM-invasion_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="EGT-modelling-LLM-invasion_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="EGT-modelling-LLM-invasion_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="EGT-modelling-LLM-invasion_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Modelling peer feedback environments with LLM invasion</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Thinking - maybe make <span class="math inline">\(b_s=0\)</span> generally? It is percieved benefit. Maybe only in non GenAI? Maybe it’s captured in cost / benefit ratio anyway??</p>
+<section id="egt-modelling-of-cooperation-in-classroom-with-llm" class="level1">
+<h1>EGT modelling of cooperation in classroom with LLM</h1>
+<section id="modelling-cooperation-amongst-peers" class="level2">
+<h2 class="anchored" data-anchor-id="modelling-cooperation-amongst-peers">Modelling cooperation amongst peers</h2>
+<p>The model examines the relationship between peers in a learning environment providing feedback on each others work. In this model the agents are students which we will refer to as <em>learners</em>, and interactions are between learners choosing to provide and receive feedback from each other. We use <span class="math inline">\(P\)</span> to indicate the learner providing feedback, and <span class="math inline">\(R\)</span> the learner receiving feedback.</p>
+<p>The strategy of interacting with other learners is outlined initially with a single parameter:</p>
+<ul>
+<li><span class="math inline">\(\Theta \in[0,1]\)</span>: Level of cooperative effort - that is how much effort a learner puts into providing feedback to another learner. The more effort towards cooperation the more benefit a peer receives from the feedback, and the more cost is incurred by the provider. <span class="math inline">\(\Theta_P\)</span> indicates the collaborative effort of the learner providing the feedback, and <span class="math inline">\(\Theta_R\)</span> the collaborative effort of the incoming feedback learner receiving the feedback.</li>
+</ul>
+<p>The environment is balanced by three parameters that guide the payoffs of the different strategies:</p>
+<ul>
+<li><span class="math inline">\(c\)</span> - Cost of cooperation</li>
+<li><span class="math inline">\(b_f\)</span> - Benefit to yourself from others providing feedback / cooperating with you.</li>
+<li><span class="math inline">\(b_s\)</span> - Benefit to yourself for providing others with feedback (i.e.&nbsp;you learn by providing feedback)</li>
+</ul>
+<p>The model initially explores the scenario <span class="math inline">\(c=2,b_f=3, b_s=1\)</span>, and will generally assume that <span class="math inline">\(b_f &gt; c\)</span>.</p>
+<p>In this framework if a player with effort strategy <span class="math inline">\(\Theta_R\)</span> receives feedback from someone with effort strategy <span class="math inline">\(\Theta_P\)</span> they gain some <em>perceived</em> value, <span class="math inline">\(V(R|P)\)</span> (read as value to reciever <span class="math inline">\(R\)</span> when they meet provider <span class="math inline">\(P\)</span>), out of sharing feedback with a peer:</p>
+<p><span class="math display">\[V(R|P) = \Theta_Pb_f  + \Theta_Rb_s  - \Theta_Rc =\Theta_Pb_f+\Theta_R(b_s-c)\]</span></p>
+<p>So the learner gains (or at least perceives to gain) knowledge from the feedback at a level dependent on the providers effort (<span class="math inline">\(b_f\Theta_P\)</span>), as well as from providing feedback to them depending their own effort towards cooperation (<span class="math inline">\(b_s\Theta_R\)</span>). They incur a cost relative to the effort they put into cooperation (<span class="math inline">\(c\Theta_R\)</span>).</p>
+<p>Within this framework there are three strategies that agents can take that we will examine:</p>
+<ul>
+<li><span class="math inline">\(C\)</span>: Cooperation, where cooperative effort is highest, <span class="math inline">\(\Theta_C=1\)</span></li>
+<li><span class="math inline">\(T\)</span>: Token-effort, where cooperative effort is half-way, <span class="math inline">\(\Theta_T=0.5\)</span></li>
+<li><span class="math inline">\(F\)</span>: Free-rider, with no cooperative effort, <span class="math inline">\(\Theta_F=0\)</span></li>
+</ul>
+<p>To introduce GenAI we provide two new strategy parameters, indicating the use of GenAI for providing feedback to others, or using GenAI to supplement feedback a learner receives:</p>
+<ul>
+<li><span class="math inline">\(\Pi\in\{0,1\}\)</span>: The use of GenAI to provide feedback (1) or not (0). <span class="math inline">\(\Pi_P\)</span> indicates the choice of the provider of feedback.</li>
+<li><span class="math inline">\(\Gamma \in \{0,1\}\)</span>: The use of GenAI to analyse your own work (1) or not (0). <span class="math inline">\(\Gamma_R\)</span> indicates the choice of the receiver.</li>
+</ul>
+<p>Additionally, there are two new environment parameters:</p>
+<ul>
+<li><span class="math inline">\(g_q\)</span>: The quality of the GenAI for feedback.<br>
+</li>
+<li><span class="math inline">\(g_c\)</span>: The reduced cost of providing feedback using AI.</li>
+</ul>
+<p>We use two values, <span class="math inline">\(g_q=0.8\)</span> to indicate slightly worse than what the peer would provide (with full effort), or <span class="math inline">\(g_q=1.25\)</span> for slightly better than what you would expect from peers. We use <span class="math inline">\(g_c=0.1\)</span> to indicate a low cost (compared to providing the feedback yourself).</p>
+<p>This adds four new strategies of GenAI use:</p>
+<ul>
+<li><span class="math inline">\(N\)</span>: No GenAI use, <span class="math inline">\(\Pi=0,\Gamma=0\)</span>.</li>
+<li><span class="math inline">\(S\)</span>: Using GenAI for only your own work, <span class="math inline">\(\Pi=0,\Gamma=1\)</span>. This incurs an additional cost <span class="math inline">\(c\times g_c\)</span>, but also provides a new benefit <span class="math inline">\(b_f \times g_q\)</span>.</li>
+<li><span class="math inline">\(O\)</span>: Using GenAI only to provide feedback for others, <span class="math inline">\(\Pi=1, \Gamma = 0\)</span>. This reduces the cost of providing feedback to <span class="math inline">\(c \times g_c\)</span> (as <span class="math inline">\(0&lt;g_c&lt;1\)</span>), but also changes the value of the feedback to <span class="math inline">\(b_f \times g_q\)</span> instead of <span class="math inline">\(b_f \times \Theta_P\)</span>.</li>
+<li><span class="math inline">\(B\)</span>: Using GenAI for yourself and others, <span class="math inline">\(\Pi=1,\Gamma=1\)</span>. This combines the effects of <span class="math inline">\(S\)</span> and <span class="math inline">\(O\)</span>.</li>
+</ul>
+<p>We then combine the cooperation strategies and GenAI strategies. So <span class="math inline">\(CN\)</span> indicates that the learner is fully cooperating but not using GenAI for themselves or for providing feedback. <span class="math inline">\(FS\)</span> would indicate that a Free-rider (no effort towards cooperation) is using the GenAI for their own feedback. Note that the strategies <span class="math inline">\(FO\)</span> and <span class="math inline">\(FB\)</span> do not make sense - a Free-rider is not providing feedback for others so would not bother using GenAI for it. They might move towards <span class="math inline">\(TS\)</span> or <span class="math inline">\(TB\)</span> however.</p>
+<p>The new, extended value calculation is more complicated:</p>
+<p><span class="math display">\[V(R|P) = \Gamma_R(g_q b_f-g_cc) \\
++ (1-\Pi_P)\max(\Theta_P+\Gamma_R g_q, \Gamma_R g_q)b_f + \Pi_P g_qb_f \\
++ (1-\Pi_R)\Theta_R(b_s-c) -\Pi_Rg_c c\]</span></p>
+<p>The equation is split on three lines to highlight the strategy payoff components. The first line contains the trade off of using GenAI for your own feedback, so it only contributes when <span class="math inline">\(\Gamma_R=1\)</span>. The second line balances the choices around the providing using GenAI. Note that if the provider does not use GenAI, and the receiver does, then these two (different) kinds of feedback are additive (the term <span class="math inline">\(\Theta_P+\Gamma_Rg_q\)</span>). It takes a bit of looking, but the above formula, for <span class="math inline">\(\Gamma_R=\Pi_R=\Pi_P=0\)</span> this formula reduces to the non-GenAI scenario (note that <span class="math inline">\(\Gamma_P\)</span> is irrelevant for calculating the receivers payoff). This game is instatiated in the code below:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.0     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>get_payoff <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Strat_r: Receiving strat, Strat_p: Providing strat</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    Strat_r, Strat_p, <span class="co"># expects rows of data frame with columns Eff, AIP, AIS</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">p =</span> <span class="fu">list</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Parameters</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit - c &lt;&gt; b_r might depend on knowledge gap??</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">b_s =</span> <span class="dv">1</span>, <span class="co"># self benefit</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    )) {</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Relabelling to match model forumula</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    Theta_R <span class="ot">=</span> Strat_r<span class="sc">$</span>Eff</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    Theta_P <span class="ot">=</span> Strat_p<span class="sc">$</span>Eff</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    Gamma_R <span class="ot">=</span> Strat_r<span class="sc">$</span>AIS</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    Pi_R <span class="ot">=</span> Strat_r<span class="sc">$</span>AIP</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    Pi_P <span class="ot">=</span> Strat_p<span class="sc">$</span>AIP</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    V.Gamma_R  <span class="ot">&lt;-</span>  Gamma_R <span class="sc">*</span> (p<span class="sc">$</span>g_q <span class="sc">*</span> p<span class="sc">$</span>b_f <span class="sc">-</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>c)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    V.Pi_P <span class="ot">&lt;-</span>  (<span class="dv">1</span><span class="sc">-</span>Pi_P) <span class="sc">*</span> <span class="fu">max</span>(Theta_P <span class="sc">+</span> Gamma_R <span class="sc">*</span> p<span class="sc">$</span>g_q, Gamma_R <span class="sc">*</span> p<span class="sc">$</span>g_q) <span class="sc">*</span> p<span class="sc">$</span>b_f <span class="sc">+</span> Pi_P <span class="sc">*</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>b_f</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    V.Pi_R <span class="ot">&lt;-</span>  (<span class="dv">1</span><span class="sc">-</span>Pi_R) <span class="sc">*</span> Theta_R <span class="sc">*</span> (p<span class="sc">$</span>b_s <span class="sc">-</span> p<span class="sc">$</span>c) <span class="sc">-</span> Pi_R <span class="sc">*</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>c</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    V <span class="ot">=</span> V.Gamma_R <span class="sc">+</span> V.Pi_P <span class="sc">+</span> V.Pi_R</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(V)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># game modelling</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>all_strategies <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CN"</span>, <span class="dv">1</span>,   <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TN"</span>, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FN"</span>, <span class="dv">0</span>,   <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CS"</span>, <span class="dv">1</span>,   <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TS"</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FS"</span>, <span class="dv">0</span>,   <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CO"</span>, <span class="dv">1</span>,   <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TO"</span>, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FO"</span>, <span class="dv">0</span>,   <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CB"</span>, <span class="dv">1</span>,   <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TB"</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FB"</span>, <span class="dv">0</span>,   <span class="dv">1</span>, <span class="dv">1</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>build_payoff_matrix <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        S,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Parameters</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">p =</span> <span class="fu">list</span>(</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">2</span>, <span class="co"># receive benefit</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">1</span>, <span class="co"># self benefit</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>) {</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    N_strategies <span class="ot">&lt;-</span> <span class="fu">nrow</span>(S)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    payoffs <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">rep</span>(<span class="cn">NA_real_</span>, N_strategies<span class="sc">*</span>N_strategies), <span class="at">dim =</span> <span class="fu">c</span>(N_strategies, N_strategies)) </span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (R <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_strategies) {</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (P <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_strategies) {</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>            payoffs[R,P] <span class="ot">&lt;-</span> <span class="fu">get_payoff</span>(<span class="fu">slice</span>(S, R,), <span class="fu">slice</span>(S, P), p)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(payoffs)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>print_payoff_matrix <span class="ot">&lt;-</span> <span class="cf">function</span>(M, stgys) {</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rownames</span>(M) <span class="ot">&lt;-</span> stgys</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colnames</span>(M) <span class="ot">&lt;-</span> stgys</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(M)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>fetch_payoff_matrix <span class="ot">&lt;-</span> <span class="cf">function</span>(strategies, p, <span class="at">as_df =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>                                <span class="at">add_exp_V =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># strategies: character vector, p: list</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    S.df <span class="ot">&lt;-</span> all_strategies <span class="sc">|&gt;</span> <span class="fu">filter</span>(Label <span class="sc">%in%</span> strategies)</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    payoff_matrix <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S.df, p)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (as_df) {</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>        <span class="fu">colnames</span>(payoff_matrix) <span class="ot">&lt;-</span> strategies</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>        payoff_df <span class="ot">&lt;-</span> <span class="fu">as.tibble</span>(payoff_matrix) <span class="sc">|&gt;</span> </span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Payoff to strategy:</span><span class="st">`</span> <span class="ot">=</span> strategies) <span class="sc">|&gt;</span> </span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(<span class="st">`</span><span class="at">Payoff to strategy:</span><span class="st">`</span>, <span class="fu">everything</span>())</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (add_exp_V) {</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>            payoff_df <span class="ot">&lt;-</span> payoff_df <span class="sc">|&gt;</span> </span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>                <span class="fu">rowwise</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>                <span class="fu">mutate</span>(<span class="at">ExpV =</span> <span class="fu">mean</span>(<span class="fu">c_across</span>(<span class="fu">where</span>(is.numeric))))</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(payoff_df)</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(payoff_matrix)</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="no-ai" class="level2">
+<h2 class="anchored" data-anchor-id="no-ai">No AI</h2>
+<p>Comparing Free-rider, Token (half effort) and Cooperator.</p>
+<p>Initially with <span class="math inline">\(c=2,b_f=2,b_s=1\)</span>, and critically <span class="math inline">\(c&gt;b_s\)</span>. This results in uncooperative behaviour.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">1</span>, <span class="co"># self benefit</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 2
+ $ b_f: num 3
+ $ b_s: num 1
+ $ g_q: num 0.8
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FN"</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TN"</span>, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CN"</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     FN  TN  CN
+FN  0.0 1.5 3.0
+TN -0.5 1.0 2.5
+CN -1.0 0.5 2.0</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.9093266739736605)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>This leads to an uncooperative system.</p>
+</section>
+<section id="no-ai---cooperation-emerging" class="level2">
+<h2 class="anchored" data-anchor-id="no-ai---cooperation-emerging">No AI - cooperation emerging</h2>
+<p>However, if we change the system so that the cost is lower than both <span class="math inline">\(b_f\)</span> and <span class="math inline">\(b_s\)</span> cooperation can emerge.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">3</span>, <span class="co"># self benefit</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 2
+ $ b_f: num 3
+ $ b_s: num 3
+ $ g_q: num 0.8
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FN"</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TN"</span>, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CN"</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    FN  TN  CN
+FN 0.0 1.5 3.0
+TN 0.5 2.0 3.5
+CN 1.0 2.5 4.0</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.9093266739736605)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+</section>
+<section id="introducing-genai" class="level2">
+<h2 class="anchored" data-anchor-id="introducing-genai">Introducing GenAI</h2>
+<p>But what happens to this cooperative system with the introduction of GenAI?</p>
+<p>Let us say that we have some mix of cooperators and free-riders in our previous environment.</p>
+<section id="cooperators-free-riders-taking-up-genai-for-providing-feedback" class="level3">
+<h3 class="anchored" data-anchor-id="cooperators-free-riders-taking-up-genai-for-providing-feedback">Cooperators / Free-riders Taking up GenAI for providing feedback?</h3>
+<p>Note that free-riders would have to move towards strategy <span class="math inline">\(CO\)</span>, not <span class="math inline">\(FO\)</span>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">1</span>, <span class="co"># cost</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">2</span>, <span class="co"># self benefit</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 1
+ $ b_f: num 3
+ $ b_s: num 2
+ $ g_q: num 0.8
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FN"</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CN"</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CO"</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     FN  CN  CO
+FN  0.0 3.0 0.3
+CN  1.0 4.0 1.3
+CO -0.1 2.9 0.2</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.90932669444704)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>Free-riders will begin to move towards using GenAI, a desirable outcome. Remember this was existing in an already cooperative environment. But would <span class="math inline">\(CN\)</span> be drawn towards <span class="math inline">\(FS\)</span>?</p>
+</section>
+<section id="moving-towards-fs" class="level3">
+<h3 class="anchored" data-anchor-id="moving-towards-fs">Moving towards FS</h3>
+<p>But how does this compare to just using the feedback for your own purposes? Given the introduction of GenAI cooperators are likely to move towards <span class="math inline">\(CO\)</span>, however <span class="math inline">\(FS\)</span> may then prove more enticing.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">1</span>, <span class="co"># cost</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">2</span>, <span class="co"># self benefit</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 1
+ $ b_f: num 3
+ $ b_s: num 2
+ $ g_q: num 0.8
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FN"</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CN"</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FS"</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    FN  CN  FS
+FN 0.0 3.0 0.0
+CN 5.7 8.7 5.7
+FS 4.7 7.7 4.7</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.9093266748844928)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-18-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>So cooperation with GenAI supplementing still wins out.</p>
+</section>
+<section id="what-about-moving-towards-cs-surely-no-incentive-for-fs" class="level3">
+<h3 class="anchored" data-anchor-id="what-about-moving-towards-cs-surely-no-incentive-for-fs">What about moving towards <span class="math inline">\(CS\)</span>? Surely no incentive for <span class="math inline">\(FS\)</span>?</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">1</span>, <span class="co"># cost</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">2</span>, <span class="co"># self benefit</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 1
+ $ b_f: num 3
+ $ b_s: num 2
+ $ g_q: num 0.8
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FS"</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CS"</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CB"</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    FS  CS  CB
+FS 4.7 7.7 2.6
+CS 5.7 8.7 3.6
+CB 4.6 7.6 2.5</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb58-21"><a href="#cb58-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb58-22"><a href="#cb58-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb58-23"><a href="#cb58-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb58-24"><a href="#cb58-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb58-25"><a href="#cb58-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb58-26"><a href="#cb58-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb58-27"><a href="#cb58-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb58-28"><a href="#cb58-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb58-29"><a href="#cb58-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-30"><a href="#cb58-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.909326688658273)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>This is good, as CS is higher overall fitness than CB.</p>
+</section>
+<section id="what-happens-when-ai-improves" class="level3">
+<h3 class="anchored" data-anchor-id="what-happens-when-ai-improves">What happens when AI improves?</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">1</span>, <span class="co"># cost</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">2</span>, <span class="co"># self benefit</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">1.25</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 1
+ $ b_f: num 3
+ $ b_s: num 2
+ $ g_q: num 1.25
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FS"</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CS"</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CB"</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    FS   CS   CB
+FS 7.4 10.4 3.95
+CS 8.4 11.4 4.95
+CB 7.3 10.3 3.85</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb70-21"><a href="#cb70-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb70-22"><a href="#cb70-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb70-23"><a href="#cb70-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb70-24"><a href="#cb70-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb70-25"><a href="#cb70-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb70-26"><a href="#cb70-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb70-27"><a href="#cb70-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb70-28"><a href="#cb70-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb70-29"><a href="#cb70-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-30"><a href="#cb70-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.9093266739736605)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="what-about-introductions-to-the-uncooperative-system" class="level2">
+<h2 class="anchored" data-anchor-id="what-about-introductions-to-the-uncooperative-system">What about introductions to the uncooperative system?</h2>
+<p>This was where <span class="math inline">\(c=2, b_f=3, b_s=1\)</span>, which led towards <span class="math inline">\(FN\)</span> from <span class="math inline">\(TN\)</span> and <span class="math inline">\(CN\)</span>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">1</span>, <span class="co"># self benefit</span></span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 2
+ $ b_f: num 3
+ $ b_s: num 1
+ $ g_q: num 0.8
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FN"</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CB"</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FS"</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-8"><a href="#cb80-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb80-9"><a href="#cb80-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb80-10"><a href="#cb80-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    FN  CB  FS
+FN 0.0 3.0 0.0
+CB 3.6 6.6 3.6
+FS 4.6 7.6 4.6</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb82-10"><a href="#cb82-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb82-11"><a href="#cb82-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-12"><a href="#cb82-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb82-13"><a href="#cb82-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb82-14"><a href="#cb82-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb82-15"><a href="#cb82-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb82-16"><a href="#cb82-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb82-17"><a href="#cb82-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb82-18"><a href="#cb82-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb82-19"><a href="#cb82-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb82-20"><a href="#cb82-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb82-21"><a href="#cb82-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb82-22"><a href="#cb82-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb82-23"><a href="#cb82-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb82-24"><a href="#cb82-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb82-25"><a href="#cb82-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb82-26"><a href="#cb82-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb82-27"><a href="#cb82-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb82-28"><a href="#cb82-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb82-29"><a href="#cb82-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-30"><a href="#cb82-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.9093266839921991)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-30-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+</section>
+<section id="what-if-ai-then-improves" class="level2">
+<h2 class="anchored" data-anchor-id="what-if-ai-then-improves">What if AI then improves?</h2>
+<p>This was where <span class="math inline">\(c=2, b_f=3, b_s=1\)</span>, which led towards <span class="math inline">\(FN\)</span> from <span class="math inline">\(TN\)</span> and <span class="math inline">\(CN\)</span>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">1</span>, <span class="co"># self benefit</span></span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">1.25</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
+<span id="cb89-7"><a href="#cb89-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
+<span id="cb89-8"><a href="#cb89-8" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Parameters:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ c  : num 2
+ $ b_f: num 3
+ $ b_s: num 1
+ $ g_q: num 1.25
+ $ g_c: num 0.1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CS"</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>,</span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CB"</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FS"</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a>payoffs <span class="ot">&lt;-</span> <span class="fu">build_payoff_matrix</span>(S, p)</span>
+<span id="cb92-9"><a href="#cb92-9" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> S<span class="sc">$</span>Label</span>
+<span id="cb92-10"><a href="#cb92-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print_payoff_matrix</span>(payoffs, strategies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    CS   CB  FS
+CS 7.3 3.85 7.3
+CB 7.1 3.65 7.1
+FS 7.3 3.85 7.3</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting <span class="im">import</span> plot_replicator_dynamics_in_simplex</span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies <span class="co"># Labels of the strategies</span></span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb94-7"><a href="#cb94-7" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs)</span>
+<span id="cb94-8"><a href="#cb94-8" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb94-9"><a href="#cb94-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb94-10"><a href="#cb94-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, ax<span class="op">=</span>ax)</span>
+<span id="cb94-11"><a href="#cb94-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-12"><a href="#cb94-12" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb94-13"><a href="#cb94-13" aria-hidden="true" tabindex="-1"></a>        .draw_triangle()</span>
+<span id="cb94-14"><a href="#cb94-14" aria-hidden="true" tabindex="-1"></a>        .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb94-15"><a href="#cb94-15" aria-hidden="true" tabindex="-1"></a>        .add_colorbar()</span>
+<span id="cb94-16"><a href="#cb94-16" aria-hidden="true" tabindex="-1"></a>        .add_vertex_labels(type_labels)</span>
+<span id="cb94-17"><a href="#cb94-17" aria-hidden="true" tabindex="-1"></a>        .draw_stationary_points(roots_xy, stability)</span>
+<span id="cb94-18"><a href="#cb94-18" aria-hidden="true" tabindex="-1"></a>        .draw_trajectory_from_roots(gradient_function,</span>
+<span id="cb94-19"><a href="#cb94-19" aria-hidden="true" tabindex="-1"></a>                                    roots,</span>
+<span id="cb94-20"><a href="#cb94-20" aria-hidden="true" tabindex="-1"></a>                                    stability,</span>
+<span id="cb94-21"><a href="#cb94-21" aria-hidden="true" tabindex="-1"></a>                                    trajectory_length<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb94-22"><a href="#cb94-22" aria-hidden="true" tabindex="-1"></a>                                    linewidth<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb94-23"><a href="#cb94-23" aria-hidden="true" tabindex="-1"></a>                                    step<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb94-24"><a href="#cb94-24" aria-hidden="true" tabindex="-1"></a>                                    color<span class="op">=</span><span class="st">'k'</span>, draw_arrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb94-25"><a href="#cb94-25" aria-hidden="true" tabindex="-1"></a>                                    arrowdirection<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb94-26"><a href="#cb94-26" aria-hidden="true" tabindex="-1"></a>                                    arrowsize<span class="op">=</span><span class="dv">30</span>, zorder<span class="op">=</span><span class="dv">4</span>, arrowstyle<span class="op">=</span><span class="st">'fancy'</span>)</span>
+<span id="cb94-27"><a href="#cb94-27" aria-hidden="true" tabindex="-1"></a>        .draw_scatter_shadow(gradient_function, <span class="dv">300</span>, color<span class="op">=</span><span class="st">'gray'</span>, marker<span class="op">=</span><span class="st">'.'</span>, s<span class="op">=</span><span class="fl">0.1</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb94-28"><a href="#cb94-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb94-29"><a href="#cb94-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-30"><a href="#cb94-30" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(0.0, 1.0, 0.0, 0.9093266739736605)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>, <span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.05, 1.05)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(-0.02, 0.9160254037844386)</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="960"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-34-2.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="old-notes" class="level1">
+<h1>Old Notes</h1>
+<section id="non-cooperative-system" class="level3">
+<h3 class="anchored" data-anchor-id="non-cooperative-system">Non-cooperative system</h3>
+<p>Below shows the situation where <span class="math display">\[B_{rec} &gt; C &gt; B_{self}\]</span></p>
+<p>Behaviour moves towards non-cooperation (free riders).</p>
+</section>
+<section id="cooperative-system" class="level3">
+<h3 class="anchored" data-anchor-id="cooperative-system">Cooperative system</h3>
+<p>Below shows the situation where <span class="math display">\[B_{rec} &gt; B_{self} &gt; C\]</span></p>
+<p>This may seem unrealistic on the surface, but could be implemented in various ways if rewards or incetives are given to cooperation.</p>
+<p>Behaviour moves towards cooperation.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
