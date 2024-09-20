@@ -1,0 +1,785 @@
+---
+title: "Modelling peer feedback environments with LLM invasion"
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+Thinking - maybe make $b_s=0$ generally? It is percieved benefit. Maybe only in non GenAI? Maybe it's captured in cost / benefit ratio anyway??
+
+# EGT modelling of cooperation in classroom with LLM
+
+## Modelling cooperation amongst peers
+
+The model examines the relationship between peers in a learning environment providing feedback on each others work. In this model the agents are students which we will refer to as *learners*, and interactions are between learners choosing to provide and receive feedback from each other. We use $P$ to indicate the learner providing feedback, and $R$ the learner receiving feedback.
+
+The strategy of interacting with other learners is outlined initially with a single parameter:
+
+- $\Theta \in[0,1]$: Level of cooperative effort - that is how much effort a learner puts into providing feedback to another learner. The more effort towards cooperation the more benefit a peer receives from the feedback, and the more cost is incurred by the provider. $\Theta_P$ indicates the collaborative effort of the learner providing the feedback, and $\Theta_R$ the collaborative effort of the incoming feedback learner receiving the feedback. 
+
+The environment is balanced by three parameters that guide the payoffs of the different strategies:
+
+- $c$ - Cost of cooperation 
+- $b_f$ - Benefit to yourself from others providing feedback / cooperating with you.
+- $b_s$ - Benefit to yourself for providing others with feedback (i.e. you learn by providing feedback) 
+
+The model initially explores the scenario $c=2,b_f=3, b_s=1$, and will generally assume that $b_f > c$. 
+
+In this framework if a player with effort strategy $\Theta_R$ receives feedback from someone with effort strategy $\Theta_P$ they gain some *perceived* value, $V(R|P)$ (read as value to reciever $R$ when they meet provider $P$), out of sharing feedback with a peer: 
+
+$$V(R|P) = \Theta_Pb_f  + \Theta_Rb_s  - \Theta_Rc =\Theta_Pb_f+\Theta_R(b_s-c)$$
+
+So the learner gains (or at least perceives to gain) knowledge from the feedback at a level dependent on the providers effort ($b_f\Theta_P$), as well as from providing feedback to them depending their own effort towards cooperation ($b_s\Theta_R$). They incur a cost relative to the effort they put into cooperation ($c\Theta_R$). 
+
+Within this framework there are three strategies that agents can take that we will examine:
+
+- $C$: Cooperation, where cooperative effort is highest, $\Theta_C=1$
+- $T$: Token-effort, where cooperative effort is half-way, $\Theta_T=0.5$
+- $F$: Free-rider, with no cooperative effort, $\Theta_F=0$
+
+To introduce GenAI we provide two new strategy parameters, indicating the use of GenAI for providing feedback to others, or using GenAI to supplement feedback a learner receives: 
+
+- $\Pi\in\{0,1\}$: The use of GenAI to provide feedback (1) or not (0). $\Pi_P$ indicates the choice of the provider of feedback. 
+- $\Gamma \in \{0,1\}$: The use of GenAI to analyse your own work (1) or not (0). $\Gamma_R$ indicates the choice of the receiver. 
+
+Additionally, there are two new environment parameters:
+
+- $g_q$: The quality of the GenAI for feedback.  
+- $g_c$: The reduced cost of providing feedback using AI.  
+
+We use two values, $g_q=0.8$ to indicate slightly worse than what the peer would provide (with full effort), or $g_q=1.25$ for slightly better than what you would expect from peers. We use $g_c=0.1$ to indicate a low cost (compared to providing the feedback yourself).
+
+This adds four new strategies of GenAI use:
+
+- $N$: No GenAI use, $\Pi=0,\Gamma=0$.
+- $S$: Using GenAI for only your own work, $\Pi=0,\Gamma=1$. This incurs an additional cost $c\times g_c$, but also provides a new benefit $b_f \times g_q$.
+- $O$: Using GenAI only to provide feedback for others, $\Pi=1, \Gamma = 0$. This reduces the cost of providing feedback to $c \times g_c$ (as $0<g_c<1$), but also changes the value of the feedback to $b_f \times g_q$ instead of $b_f \times \Theta_P$.
+- $B$: Using GenAI for yourself and others, $\Pi=1,\Gamma=1$. This combines the effects of $S$ and $O$.
+
+We then combine the cooperation strategies and GenAI strategies. So $CN$ indicates that the learner is fully cooperating but not using GenAI for themselves or for providing feedback. $FS$ would indicate that a Free-rider (no effort towards cooperation) is using the GenAI for their own feedback. Note that the strategies $FO$ and $FB$ do not make sense - a Free-rider is not providing feedback for others so would not bother using GenAI for it. They might move towards $TS$ or $TB$ however. 
+
+The new, extended value calculation is more complicated:
+
+$$V(R|P) = \Gamma_R(g_q b_f-g_cc) \\
++ (1-\Pi_P)\max(\Theta_P+\Gamma_R g_q, \Gamma_R g_q)b_f + \Pi_P g_qb_f \\ 
++ (1-\Pi_R)\Theta_R(b_s-c) -\Pi_Rg_c c$$
+
+ The equation is split on three lines to highlight the strategy payoff components. The first line contains the trade off of using GenAI for your own feedback, so it only contributes when $\Gamma_R=1$. The second line balances the choices around the providing using GenAI. Note that if the provider does not use GenAI, and the receiver does, then these two (different) kinds of feedback are additive (the term $\Theta_P+\Gamma_Rg_q$).
+It takes a bit of looking, but the above formula, for $\Gamma_R=\Pi_R=\Pi_P=0$ this formula reduces to the non-GenAI scenario (note that $\Gamma_P$ is irrelevant for calculating the receivers payoff).
+This game is instatiated in the code below:
+
+
+``` {r}
+library(tidyverse)
+
+get_payoff <- function(
+        # Strat_r: Receiving strat, Strat_p: Providing strat
+    Strat_r, Strat_p, # expects rows of data frame with columns Eff, AIP, AIS
+    p = list(
+        # Parameters
+        c = 2, # cost
+        b_f = 3, # receive benefit - c <> b_r might depend on knowledge gap??
+        b_s = 1, # self benefit
+        g_q = 0.8, # LLM is 0.8 of decent feedback
+        g_c = 0.1 # reduces cost of giving fb by this
+    )) {
+    # Relabelling to match model forumula
+    Theta_R = Strat_r$Eff
+    Theta_P = Strat_p$Eff
+    Gamma_R = Strat_r$AIS
+    Pi_R = Strat_r$AIP
+    Pi_P = Strat_p$AIP
+    
+    V.Gamma_R  <-  Gamma_R * (p$g_q * p$b_f - p$g_c * p$c)
+    V.Pi_P <-  (1-Pi_P) * max(Theta_P + Gamma_R * p$g_q, Gamma_R * p$g_q) * p$b_f + Pi_P * p$g_c * p$b_f
+    V.Pi_R <-  (1-Pi_R) * Theta_R * (p$b_s - p$c) - Pi_R * p$g_c * p$c
+    
+    V = V.Gamma_R + V.Pi_P + V.Pi_R
+    return(V)
+}
+```
+
+``` {r}
+# game modelling
+all_strategies <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "CN", 1,   0, 0,
+    "TN", 0.5, 0, 0,
+    "FN", 0,   0, 0,
+    "CS", 1,   1, 0,
+    "TS", 0.5, 1, 0,
+    "FS", 0,   1, 0,
+    "CO", 1,   0, 1,
+    "TO", 0.5, 0, 1,
+    "FO", 0,   0, 1,
+    "CB", 1,   1, 1,
+    "TB", 0.5, 1, 1,
+    "FB", 0,   1, 1
+)
+build_payoff_matrix <- function(
+        S,
+        # Parameters
+        p = list(
+            c = 2, # cost
+            b_f = 2, # receive benefit
+            b_s = 1, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+) {
+    N_strategies <- nrow(S)
+    payoffs <- array(rep(NA_real_, N_strategies*N_strategies), dim = c(N_strategies, N_strategies)) 
+    for (R in 1:N_strategies) {
+        for (P in 1:N_strategies) {
+            payoffs[R,P] <- get_payoff(slice(S, R,), slice(S, P), p)
+        }
+    }
+    return(payoffs)
+}
+
+print_payoff_matrix <- function(M, stgys) {
+    rownames(M) <- stgys
+    colnames(M) <- stgys
+    print(M)
+}
+
+fetch_payoff_matrix <- function(strategies, p, as_df = FALSE,
+                                add_exp_V = FALSE) {
+    # strategies: character vector, p: list
+    S.df <- all_strategies |> filter(Label %in% strategies)
+    payoff_matrix <- build_payoff_matrix(S.df, p)
+    if (as_df) {
+        colnames(payoff_matrix) <- strategies
+        payoff_df <- as.tibble(payoff_matrix) |> 
+            mutate(`Payoff to strategy:` = strategies) |> 
+            select(`Payoff to strategy:`, everything())
+        if (add_exp_V) {
+            payoff_df <- payoff_df |> 
+                rowwise() |> 
+                mutate(ExpV = mean(c_across(where(is.numeric))))
+        }
+        return(payoff_df)
+    } else {
+        return(payoff_matrix)
+    }
+}
+```
+
+
+
+## No AI
+
+Comparing Free-rider, Token (half effort) and Cooperator.
+
+Initially with $c=2,b_f=2,b_s=1$, and critically $c>b_s$. This results in uncooperative behaviour. 
+
+``` {r}
+# Model params
+        p = list(
+            c = 2, # cost
+            b_f = 3, # receive benefit
+            b_s = 1, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "FN", 0, 0, 0,
+    "TN", 0.5, 0, 0,
+    "CN", 1, 0, 0
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+
+This leads to an uncooperative system.
+
+## No AI - cooperation emerging
+
+However, if we change the system so that the cost is lower than both $b_f$ and $b_s$ cooperation can emerge. 
+
+``` {r}
+# Model params
+        p = list(
+            c = 2, # cost
+            b_f = 3, # receive benefit
+            b_s = 3, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "FN", 0, 0, 0,
+    "TN", 0.5, 0, 0,
+    "CN", 1, 0, 0
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+## Introducing GenAI
+
+But what happens to this cooperative system with the introduction of GenAI?
+
+Let us say that we have some mix of cooperators and free-riders in our previous environment. 
+
+### Cooperators / Free-riders Taking up GenAI for providing feedback?
+
+Note that free-riders would have to move towards strategy $CO$, not $FO$. 
+
+``` {r}
+# Model params
+        p = list(
+            c = 1, # cost
+            b_f = 3, # receive benefit
+            b_s = 2, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "FN", 0, 0, 0,
+    "CN", 1, 0, 0,
+    "CO", 1, 0, 1
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+Free-riders will begin to move towards using GenAI, a desirable outcome. Remember this was existing in an already cooperative environment. But would $CN$ be drawn towards $FS$?
+
+### Moving towards FS
+
+But how does this compare to just using the feedback for your own purposes? Given the introduction of GenAI cooperators are likely to move towards $CO$, however $FS$ may then prove more enticing. 
+
+``` {r}
+# Model params
+        p = list(
+            c = 1, # cost
+            b_f = 3, # receive benefit
+            b_s = 2, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "FN", 0, 0, 0,
+    "CN", 1, 1, 0,
+    "FS", 0, 1, 0
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+So cooperation with GenAI supplementing still wins out.
+
+### What about moving towards $CS$? Surely no incentive for $FS$?
+
+``` {r}
+# Model params
+        p = list(
+            c = 1, # cost
+            b_f = 3, # receive benefit
+            b_s = 2, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "FS", 0, 1, 0,
+    "CS", 1, 1, 0,
+    "CB", 1, 1, 1
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+This is good, as CS is higher overall fitness than CB. 
+
+
+### What happens when AI improves?
+
+``` {r}
+# Model params
+        p = list(
+            c = 1, # cost
+            b_f = 3, # receive benefit
+            b_s = 2, # self benefit
+            g_q = 1.25, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "FS", 0, 1, 0,
+    "CS", 1, 1, 0,
+    "CB", 1, 1, 1
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+
+
+## What about introductions to the uncooperative system?
+
+This was where $c=2, b_f=3, b_s=1$, which led towards $FN$ from $TN$ and $CN$.
+
+``` {r}
+# Model params
+        p = list(
+            c = 2, # cost
+            b_f = 3, # receive benefit
+            b_s = 1, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "FN", 0, 0, 0,
+    "CB", 1, 1, 0,
+    "FS", 0, 1, 0
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+
+## What if AI then improves?
+
+This was where $c=2, b_f=3, b_s=1$, which led towards $FN$ from $TN$ and $CN$.
+
+``` {r}
+# Model params
+        p = list(
+            c = 2, # cost
+            b_f = 3, # receive benefit
+            b_s = 1, # self benefit
+            g_q = 1.25, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+        )
+```
+
+Parameters:
+
+``` {r}
+glimpse(p)
+```
+
+``` {r}
+S <- tribble(
+    ~Label, ~Eff, ~AIS, ~AIP,
+    "CS", 0, 1, 0,
+    "CB", 1, 1, 1,
+    "FS", 0, 1, 0
+)
+
+payoffs <- build_payoff_matrix(S, p)
+strategies <- S$Label
+print_payoff_matrix(payoffs, strategies)
+```
+
+``` {python}
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting import plot_replicator_dynamics_in_simplex
+
+type_labels = r.strategies # Labels of the strategies
+fig, ax = plt.subplots(figsize=(10, 8))
+payoffs = np.array(r.payoffs)
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+fig, ax = plt.subplots(figsize=(10, 8))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+        .draw_triangle()
+        .draw_gradients(zorder=0)
+        .add_colorbar()
+        .add_vertex_labels(type_labels)
+        .draw_stationary_points(roots_xy, stability)
+        .draw_trajectory_from_roots(gradient_function,
+                                    roots,
+                                    stability,
+                                    trajectory_length=15,
+                                    linewidth=1,
+                                    step=0.01,
+                                    color='k', draw_arrow=True,
+                                    arrowdirection='right',
+                                    arrowsize=30, zorder=4, arrowstyle='fancy')
+        .draw_scatter_shadow(gradient_function, 300, color='gray', marker='.', s=0.1, zorder=0)
+        )
+
+ax.axis('off')
+ax.set_aspect('equal')
+
+plt.xlim((-.05, 1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Old Notes
+
+### Non-cooperative system
+
+Below shows the situation where $$B_{rec} > C > B_{self}$$
+
+Behaviour moves towards non-cooperation (free riders).
+
+
+### Cooperative system
+
+Below shows the situation where $$B_{rec} > B_{self} > C$$
+
+This may seem unrealistic on the surface, but could be implemented in various ways if rewards or incetives are given to cooperation.
+
+Behaviour moves towards cooperation.
