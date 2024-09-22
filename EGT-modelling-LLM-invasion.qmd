@@ -424,12 +424,12 @@ plt.show()
 
 ### Increasing self benefit in GenAI environment
 
-#### Higher qual AI: FS, FB, CS. $b_s=2$
+#### Lower qual AI: FS, FB, CS. $b_s=2$
 
 Parameters:
 
 ``` {r}
-p$g_q <- 1.25
+p$g_q <- 0.8
 p$b_s <- 2
 glimpse(p)
 ```
@@ -468,12 +468,12 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-#### Higher qual AI: FS, FB, CS. $b_s=3$
+#### Lower qual AI: FS, FB, CS. $b_s=3$
 
 Parameters:
 
 ``` {r}
-p$g_q <- 1.25
+p$g_q <- 0.8
 p$b_s <- 3
 glimpse(p)
 ```
@@ -512,12 +512,12 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-#### Higher qual AI: FS, FB, CS. $b_s=4$
+#### Lower qual AI: FS, FB, CS. $b_s=4$
 
 Parameters:
 
 ``` {r}
-p$g_q <- 1.25
+p$g_q <- 0.8
 p$b_s <- 4
 glimpse(p)
 ```
