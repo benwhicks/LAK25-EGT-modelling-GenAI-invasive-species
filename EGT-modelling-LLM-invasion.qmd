@@ -1,15 +1,11 @@
 ---
-title: "short"
+title: "EGT modelling of peer-feedback and GenAI invasion"
 format: 
     html:
         code-fold: true
         code-summary: "Show the code"
 editor: visual
 ---
-
-Thinking - maybe make $b_s=0$ generally? It is percieved benefit. Maybe only in non GenAI? Maybe it's captured in cost / benefit ratio anyway??
-
-Also, some kind of assortment would be good to model later. 
 
 # EGT modelling of cooperation in classroom with LLM
 
@@ -202,7 +198,7 @@ Initially with $c=4,b_f=5,b_s=2, a=1$.
         p = list(
             c = 4, # cost
             b_f = 5, # receive benefit
-            b_s = 3, # self benefit
+            b_s = 2, # self benefit
             g_q = 0.8, # LLM is 0.8 of decent feedback
             g_c = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
             a = 1 # assortment
@@ -225,6 +221,7 @@ strategies <- c("TN", "CN", "FN")
 payoffs_df <- fetch_payoff_matrix(strategies, p, as_df = T)
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 payoffs_df
+strategies <- c("T", "C", "F")
 ```
 
 

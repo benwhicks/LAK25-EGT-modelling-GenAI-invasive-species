@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>short</title>
+<title>EGT modelling of peer-feedback and GenAI invasion</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">short</h1>
+<h1 class="title">EGT modelling of peer-feedback and GenAI invasion</h1>
 </div>
 
 
@@ -96,8 +96,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>Thinking - maybe make <span class="math inline">\(b_s=0\)</span> generally? It is percieved benefit. Maybe only in non GenAI? Maybe it’s captured in cost / benefit ratio anyway??</p>
-<p>Also, some kind of assortment would be good to model later.</p>
 <section id="egt-modelling-of-cooperation-in-classroom-with-llm" class="level1">
 <h1>EGT modelling of cooperation in classroom with LLM</h1>
 <section id="modelling-cooperation-amongst-peers" class="level2">
@@ -293,7 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">4</span>, <span class="co"># cost</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">5</span>, <span class="co"># receive benefit</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">3</span>, <span class="co"># self benefit</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">2</span>, <span class="co"># self benefit</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span>, <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">a =</span> <span class="dv">1</span> <span class="co"># assortment</span></span>
@@ -304,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>List of 6
  $ c  : num 4
  $ b_f: num 5
- $ b_s: num 3
+ $ b_s: num 2
  $ g_q: num 0.8
  $ g_c: num 0.1
  $ a  : num 1</code></pre>
@@ -321,7 +319,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 2 × 3
   `Payoff to strategy:`    CN    FN
   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt;
-1 CN                        5    -1
+1 CN                        4    -2
 2 FN                        5     1</code></pre>
 </div>
 </div>
@@ -339,56 +337,60 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 3 × 4
   `Payoff to strategy:`    TN    CN    FN
   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 TN                      3     4.5  -0.5
-2 CN                      1.5   5    -1  
-3 FN                      2.5   5     1  </code></pre>
+1 TN                      2.5     4    -1
+2 CN                      0.5     4    -2
+3 FN                      2.5     5     1</code></pre>
 </div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"T"</span>, <span class="st">"C"</span>, <span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>           .add_colorbar()</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>           .add_colorbar()</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(np.float64(0.0), np.float64(1.0), np.float64(0.0), np.float64(0.9093266739736605))</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.05, 1.05)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.02, 0.9160254037844386)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="1440"></p>
@@ -403,22 +405,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_payoff_matrix</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    all_strategies<span class="sc">$</span>Label, p, <span class="at">as_df =</span> T, <span class="at">add_exp_V =</span> T) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(ExpV)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_payoff_matrix</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    all_strategies<span class="sc">$</span>Label, p, <span class="at">as_df =</span> T, <span class="at">add_exp_V =</span> T) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(ExpV)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 12 × 14
 # Rowwise: 
    `Payoff to strategy:`    CN    TN    FN    CS    TS    FS    CO    TO    FO
    &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 CN                      5     1.5  -1     5     1.5  -1     3     3     3  
- 2 TN                      4.5   3    -0.5   4.5   3    -0.5   3.5   3.5   3.5
- 3 CO                      4.6   2.1  -0.4   4.6   2.1  -0.4   4.6   3.6   3.6
- 4 TO                      4.6   2.1  -0.4   4.6   2.1  -0.4   3.6   4.6   3.6
- 5 FO                      4.6   2.1  -0.4   4.6   2.1  -0.4   3.6   3.6   4.6
- 6 FN                      5     2.5   1     5     2.5   1     4     4     4  
- 7 CS                      8.6   5.1   2.6   8.6   5.1   2.6   2.6   2.6   2.6
- 8 TS                      8.1   6.6   3.1   8.1   6.6   3.1   3.1   3.1   3.1
+ 1 CN                      4     0.5  -2     4     0.5  -2     2     2     2  
+ 2 TN                      4     2.5  -1     4     2.5  -1     3     3     3  
+ 3 CS                      7.6   4.1   1.6   7.6   4.1   1.6   1.6   1.6   1.6
+ 4 CO                      4.6   2.1  -0.4   4.6   2.1  -0.4   4.6   3.6   3.6
+ 5 TO                      4.6   2.1  -0.4   4.6   2.1  -0.4   3.6   4.6   3.6
+ 6 FO                      4.6   2.1  -0.4   4.6   2.1  -0.4   3.6   3.6   4.6
+ 7 FN                      5     2.5   1     5     2.5   1     4     4     4  
+ 8 TS                      7.6   6.1   2.6   7.6   6.1   2.6   2.6   2.6   2.6
  9 CB                      8.2   5.7   3.2   8.2   5.7   3.2   4.2   3.2   3.2
 10 TB                      8.2   5.7   3.2   8.2   5.7   3.2   3.2   4.2   3.2
 11 FB                      8.2   5.7   3.2   8.2   5.7   3.2   3.2   3.2   4.2
@@ -433,12 +435,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>interesting_strategies <span class="ot">&lt;-</span> all_strategies <span class="sc">|&gt;</span> </span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(Label, <span class="st">"O|N"</span>), </span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>           Label <span class="sc">!=</span> <span class="st">"TB"</span>, Label <span class="sc">!=</span> <span class="st">"CB"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(Label) <span class="sc">|&gt;</span> </span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(Label)</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>interesting_strategies</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>interesting_strategies <span class="ot">&lt;-</span> all_strategies <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(Label, <span class="st">"O|N"</span>), </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           Label <span class="sc">!=</span> <span class="st">"TB"</span>, Label <span class="sc">!=</span> <span class="st">"CB"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(Label) <span class="sc">|&gt;</span> </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(Label)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>interesting_strategies</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "CS" "FB" "FS" "TS"</code></pre>
@@ -448,16 +450,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_payoff_matrix</span>(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    interesting_strategies, p, <span class="at">as_df =</span> T, <span class="at">add_exp_V =</span> T) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(ExpV)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_payoff_matrix</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    interesting_strategies, p, <span class="at">as_df =</span> T, <span class="at">add_exp_V =</span> T) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(ExpV)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 6
 # Rowwise: 
   `Payoff to strategy:`    CS    FB    FS    TS  ExpV
   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 CS                      8.6   2.6   2.6   5.1  4.72
-2 TS                      8.1   3.1   3.1   6.6  5.22
+1 CS                      7.6   1.6   1.6   4.1  3.72
+2 TS                      7.6   2.6   2.6   6.1  4.72
 3 FB                      8.2   4.2   3.2   5.7  5.32
 4 FS                      8.6   3.6   4.6   6.1  5.72</code></pre>
 </div>
@@ -470,8 +472,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
@@ -486,55 +488,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"TN"</span>, <span class="st">"CN"</span>, <span class="st">"FN"</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"TN"</span>, <span class="st">"CN"</span>, <span class="st">"FN"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(np.float64(0.0), np.float64(1.0), np.float64(0.0), np.float64(0.9093266739736605))</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.05, 1.05)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.02, 0.9160254037844386)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="1440"></p>
@@ -547,8 +549,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
@@ -563,55 +565,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"TN"</span>, <span class="st">"CN"</span>, <span class="st">"FN"</span>)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"TN"</span>, <span class="st">"CN"</span>, <span class="st">"FN"</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
-<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
-<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
-<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(np.float64(0.0), np.float64(1.0), np.float64(0.0), np.float64(0.9093266739736605))</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.05, 1.05)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.02, 0.9160254037844386)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="1440"></p>
@@ -624,8 +626,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
@@ -640,55 +642,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"TN"</span>, <span class="st">"CN"</span>, <span class="st">"FN"</span>)</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"TN"</span>, <span class="st">"CN"</span>, <span class="st">"FN"</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
-<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
-<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
-<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(np.float64(0.0), np.float64(1.0), np.float64(0.0), np.float64(0.9093266739736605))</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.05, 1.05)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.02, 0.9160254037844386)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="1440"></p>
@@ -704,9 +706,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
@@ -721,55 +723,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"FB"</span>, <span class="st">"CS"</span>, <span class="st">"FS"</span>)</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"FB"</span>, <span class="st">"CS"</span>, <span class="st">"FS"</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
-<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
-<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
-<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
-<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
-<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
+<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
+<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(np.float64(0.0), np.float64(1.0), np.float64(0.0), np.float64(0.9093266739736605))</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.05, 1.05)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.02, 0.9160254037844386)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="1440"></p>
@@ -782,9 +784,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
@@ -799,55 +801,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"FB"</span>, <span class="st">"CS"</span>, <span class="st">"FS"</span>)</span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"FB"</span>, <span class="st">"CS"</span>, <span class="st">"FS"</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
-<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
-<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
-<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
-<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
-<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
-<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
-<span id="cb67-15"><a href="#cb67-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb67-16"><a href="#cb67-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
-<span id="cb67-17"><a href="#cb67-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
-<span id="cb67-18"><a href="#cb67-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
-<span id="cb67-19"><a href="#cb67-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-20"><a href="#cb67-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
+<span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
+<span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
+<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-20"><a href="#cb68-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(np.float64(0.0), np.float64(1.0), np.float64(0.0), np.float64(0.9093266739736605))</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.05, 1.05)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.02, 0.9160254037844386)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="1440"></p>
@@ -860,9 +862,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
@@ -877,55 +879,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"FB"</span>, <span class="st">"CS"</span>, <span class="st">"FS"</span>)</span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"FB"</span>, <span class="st">"CS"</span>, <span class="st">"FS"</span>)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
-<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
-<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
-<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
-<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
-<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
-<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
-<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
-<span id="cb77-18"><a href="#cb77-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
-<span id="cb77-19"><a href="#cb77-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-20"><a href="#cb77-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.plotting.simplified <span class="im">import</span> plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> egttools.utils <span class="im">import</span> calculate_stationary_distribution</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>payoffs <span class="op">=</span> np.array(r.payoffs_M)</span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>type_labels <span class="op">=</span> r.strategies</span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>simplex, gradient_function, roots, roots_xy, stability <span class="op">=</span> plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search<span class="op">=</span><span class="dv">100</span>, </span>
+<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>ax)</span>
+<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (simplex.add_axis(ax<span class="op">=</span>ax)</span>
+<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a>           .draw_triangle()</span>
+<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a>           .draw_gradients(zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>           <span class="co"># .add_colorbar()</span></span>
+<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>           .add_vertex_labels(type_labels)</span>
+<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a>           .draw_stationary_points(roots_xy, stability))</span>
+<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-20"><a href="#cb78-20" aria-hidden="true" tabindex="-1"></a>ax.axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(np.float64(0.0), np.float64(1.0), np.float64(0.0), np.float64(0.9093266739736605))</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">'equal'</span>)</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>plt.xlim((<span class="op">-</span><span class="fl">.05</span>,<span class="fl">1.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.05, 1.05)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>plt.ylim((<span class="op">-</span><span class="fl">.02</span>, simplex.top_corner <span class="op">+</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(-0.02, 0.9160254037844386)</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="EGT-modelling-LLM-invasion_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="1440"></p>
