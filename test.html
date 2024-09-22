@@ -144,12 +144,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>We then combine the cooperation strategies and GenAI strategies. So <span class="math inline">\(CN\)</span> indicates that the learner is fully cooperating but not using GenAI for themselves or for providing feedback. <span class="math inline">\(FS\)</span> would indicate that a Free-rider (no effort towards cooperation) is using the GenAI for their own feedback. Note that the strategies <span class="math inline">\(FO\)</span> and <span class="math inline">\(FB\)</span> do not make sense - a Free-rider is not providing feedback for others so would not bother using GenAI for it. They might move towards <span class="math inline">\(TS\)</span> or <span class="math inline">\(TB\)</span> however.</p>
 <p>The new, extended value calculation is more complicated:</p>
-<p><span class="math display">\[V(R|P) = \Gamma_R(g_q b_f-g_cc) \\
-+ (1-\Pi_P)\max(\Theta_P+\Gamma_R g_q, \Gamma_R g_q)b_f + \Pi_P g_qb_f(1-\Gamma_R) \\
-+ (1-\Pi_R)\Theta_R(b_s-c) -\Pi_Rg_c c\]</span></p>
-<p>The equation is split on three lines to highlight the strategy payoff components. The first line contains the trade off of using GenAI for your own feedback, so it only contributes when <span class="math inline">\(\Gamma_R=1\)</span>. The second line balances the choices around the providing using GenAI. Note that if the provider does not use GenAI, and the receiver does, then these two (different) kinds of feedback are additive (the term <span class="math inline">\(\Theta_P+\Gamma_Rg_q\)</span>). It takes a bit of looking, but the above formula, for <span class="math inline">\(\Gamma_R=\Pi_R=\Pi_P=0\)</span> this formula reduces to the non-GenAI scenario (note that <span class="math inline">\(\Gamma_P\)</span> is irrelevant for calculating the receivers payoff). This game is instatiated in the code below:</p>
+<p><span class="math display">\[V(R|P) = (1-\Gamma_R)[\Pi_P g_c b_f + (1-\Pi_P)\Theta_P b_f] \\
++ \Gamma_R[g_q b_f-g_cc + (1-\Pi_P)\Theta_Pb_f] \\
++(1-\Pi_R)\Theta_R(b_s-c) \\
+-\Pi_R g_c c \\\]</span></p>
+<p>It takes a bit of looking, but the above formula, for <span class="math inline">\(\Gamma_R=\Pi_R=\Pi_P=0\)</span> this formula reduces to the non-GenAI scenario (note that <span class="math inline">\(\Gamma_P\)</span> is irrelevant for calculating the receivers payoff). This game is instatiated in the code below:</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.1.4     ✔ readr     2.1.5
@@ -162,6 +166,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EvolutionaryGames)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>get_payoff <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
@@ -182,15 +188,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    Pi_R <span class="ot">=</span> Strat_r<span class="sc">$</span>AIP</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    Pi_P <span class="ot">=</span> Strat_p<span class="sc">$</span>AIP</span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    V.Gamma_R  <span class="ot">&lt;-</span>  Gamma_R <span class="sc">*</span> (p<span class="sc">$</span>g_q <span class="sc">*</span> p<span class="sc">$</span>b_f <span class="sc">-</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>c)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    V.Pi_P <span class="ot">&lt;-</span>  (<span class="dv">1</span><span class="sc">-</span>Pi_P) <span class="sc">*</span> <span class="fu">max</span>(Theta_P <span class="sc">+</span> Gamma_R <span class="sc">*</span> p<span class="sc">$</span>g_q, Gamma_R <span class="sc">*</span> p<span class="sc">$</span>g_q) <span class="sc">*</span> p<span class="sc">$</span>b_f <span class="sc">+</span> (Pi_P <span class="sc">*</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>b_f) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> Gamma_R)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    V.Pi_R <span class="ot">&lt;-</span>  (<span class="dv">1</span><span class="sc">-</span>Pi_R) <span class="sc">*</span> Theta_R <span class="sc">*</span> (p<span class="sc">$</span>b_s <span class="sc">-</span> p<span class="sc">$</span>c) <span class="sc">-</span> Pi_R <span class="sc">*</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>c</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    V <span class="ot">=</span> V.Gamma_R <span class="sc">+</span> V.Pi_P <span class="sc">+</span> V.Pi_R</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(V)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># V.Gamma_R  &lt;-  Gamma_R * (p$g_q * p$b_f - p$g_c * p$c)</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># V.Pi_P &lt;-  (1-Pi_P) * max(Theta_P + Gamma_R * p$g_q, Gamma_R * p$g_q) * p$b_f + (Pi_P * p$g_c * p$b_f) * (1 - Gamma_R)</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># V.Pi_R &lt;-  (1-Pi_R) * Theta_R * (p$b_s - p$c) - Pi_R * p$g_c * p$c</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    V.Gamma_R0 <span class="ot">&lt;-</span> (<span class="dv">1</span><span class="sc">-</span>Gamma_R) <span class="sc">*</span> (</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        Pi_P <span class="sc">*</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>b_f <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>Pi_P) <span class="sc">*</span> (Theta_P <span class="sc">*</span> p<span class="sc">$</span>b_f)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    V.Gamma_R1 <span class="ot">&lt;-</span> Gamma_R<span class="sc">*</span>(p<span class="sc">$</span>g_q <span class="sc">*</span> p<span class="sc">$</span>b_f <span class="sc">-</span> p<span class="sc">$</span>g_c<span class="sc">*</span>p<span class="sc">$</span>c <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>Pi_P) <span class="sc">*</span> Theta_P <span class="sc">*</span> p<span class="sc">$</span>b_f)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    V.Pi_R0 <span class="ot">&lt;-</span> (<span class="dv">1</span> <span class="sc">-</span> Pi_R) <span class="sc">*</span> Theta_R <span class="sc">*</span> (p<span class="sc">$</span>b_s <span class="sc">-</span> p<span class="sc">$</span>c)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    V.Pi_R1 <span class="ot">&lt;-</span> <span class="sc">-</span>Pi_R <span class="sc">*</span> p<span class="sc">$</span>g_c <span class="sc">*</span> p<span class="sc">$</span>c</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    V <span class="ot">=</span> V.Gamma_R0 <span class="sc">+</span> V.Gamma_R1 <span class="sc">+</span> V.Pi_R0 <span class="sc">+</span> V.Pi_R1</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(V)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># game modelling</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>all_strategies <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>Label, <span class="sc">~</span>Eff, <span class="sc">~</span>AIS, <span class="sc">~</span>AIP,</span>
@@ -255,6 +271,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(payoff_matrix)</span>
 <span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    }</span>
 <span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="no-ai" class="level2">
@@ -263,36 +280,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Initially with <span class="math inline">\(c=2,b_f=2,b_s=1\)</span>, and critically <span class="math inline">\(c&gt;b_s\)</span>. This results in uncooperative behaviour.</p>
 <p>Comparing just <span class="math inline">\(FN\)</span> and <span class="math inline">\(CN\)</span> (i.e.&nbsp;Hawk-Dove)</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="co"># self benefit</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">1</span>, <span class="co"># self benefit</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span> <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 5
  $ c  : num 2
  $ b_f: num 3
- $ b_s: num -1
+ $ b_s: num 1
  $ g_q: num 0.8
  $ g_c: num 0.1</code></pre>
 </div>
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>strategies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"CN"</span>, <span class="st">"FN"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>payoffs_df <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> T)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>payoffs_M <span class="ot">&lt;-</span> <span class="fu">fetch_payoff_matrix</span>(strategies, p, <span class="at">as_df =</span> F)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>payoffs_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 3
   `Payoff to strategy:`    CN    FN
   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt;
-1 CN                        0    -3
+1 CN                        2    -1
 2 FN                        3     0</code></pre>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> egttools <span class="im">as</span> egt</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -321,11 +346,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'k/Z'</span>)</span>
 <span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'generation'</span>)</span>
 <span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>ax.set_xscale(<span class="st">'log'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="test_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> egttools <span class="im">as</span> egt</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -353,16 +381,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>fig.patch.set_facecolor(<span class="st">'white'</span>)</span>
 <span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>lines <span class="op">=</span> ax.plot(x, <span class="bu">list</span>(<span class="bu">reversed</span>(dist)))</span>
 <span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>plt.setp(lines, linewidth<span class="op">=</span><span class="fl">2.0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[None]</code></pre>
 </div>
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'stationary distribution'</span>,size<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'$k/Z$'</span>,size<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>(0.0, 1.0)</code></pre>
 </div>
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="test_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid" width="480"></p>
 </div>
