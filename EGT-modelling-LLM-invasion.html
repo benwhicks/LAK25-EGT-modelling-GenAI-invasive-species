@@ -114,11 +114,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><span class="math inline">\(b_s\)</span> - Benefit to yourself for providing others with feedback (i.e.&nbsp;you learn by providing feedback)</li>
 <li><span class="math inline">\(a\)</span> - Benefit to yourself if you are cooperating with someone with the same strategy as you (i.e.&nbsp;a social benefit, gravitation towards similar learners).</li>
 </ul>
-<p>The model initially explores the scenario <span class="math inline">\(c=3,b_f=4, b_s=2,a=1\)</span>, and will generally assume that <span class="math inline">\(b_f &gt; c\)</span>. We explore varying strategies and varying the value of <span class="math inline">\(b_s\)</span>.</p>
+<p>The model initially explores the scenario <span class="math inline">\(c=4,b_f=5, b_s=2,a=1\)</span>, and will generally assume that <span class="math inline">\(b_f &gt; c\)</span>. We explore varying strategies and varying the value of <span class="math inline">\(b_s\)</span>.</p>
 <p>In this framework if a player with effort strategy <span class="math inline">\(\Theta_R\)</span> receives feedback from someone with effort strategy <span class="math inline">\(\Theta_P\)</span> they gain some <em>perceived</em> value, <span class="math inline">\(V(R|P)\)</span> (read as value to reciever <span class="math inline">\(R\)</span> when they meet provider <span class="math inline">\(P\)</span>), out of sharing feedback with a peer:</p>
 <p><span class="math display">\[V(R|P) = \Theta_Pb_f  + \Theta_Rb_s  - \Theta_Rc +a[RP]\]</span></p>
-<p>Where <span class="math inline">\(a[RP]=a\)</span> if <span class="math inline">\(\Theta_R=\Theta_P\)</span>, and zero otherwise.</p>
-<p>So the learner gains (or at least perceives to gain) knowledge from the feedback at a level dependent on the providers effort (<span class="math inline">\(b_f\Theta_P\)</span>), as well as from providing feedback to them depending their own effort towards cooperation (<span class="math inline">\(b_s\Theta_R\)</span>). They incur a cost relative to the effort they put into cooperation (<span class="math inline">\(c\Theta_R\)</span>).</p>
+<p>Where <span class="math inline">\(a[RP]=a\)</span> if <span class="math inline">\(\Theta_R=\Theta_P\)</span>, and zero otherwise. This amounts to a preference for working with like-minded peers.</p>
+<p>So the learner gains (or at least perceives to gain) value from the knowledge from the feedback at a level dependent on the providers effort (<span class="math inline">\(b_f\Theta_P\)</span>), as well as from providing feedback to them depending their own effort towards cooperation (<span class="math inline">\(b_s\Theta_R\)</span>). They incur a cost relative to the effort they put into cooperation (<span class="math inline">\(c\Theta_R\)</span>).</p>
 <p>Within this framework there are three strategies that agents can take that we will examine:</p>
 <ul>
 <li><span class="math inline">\(C\)</span>: Cooperation, where cooperative effort is highest, <span class="math inline">\(\Theta_C=1\)</span></li>
@@ -178,12 +178,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    Strat_r, Strat_p, <span class="co"># expects rows of data frame with columns Eff, AIP, AIS</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">p =</span> <span class="fu">list</span>(</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Parameters</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">c =</span> <span class="dv">2</span>, <span class="co"># cost</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">b_f =</span> <span class="dv">3</span>, <span class="co"># receive benefit - c &lt;&gt; b_r might depend on knowledge gap??</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">b_s =</span> <span class="dv">1</span>, <span class="co"># self benefit</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">c =</span> <span class="dv">4</span>, <span class="co"># cost</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">b_f =</span> <span class="dv">5</span>, <span class="co"># receive benefit - c &lt;&gt; b_r might depend on knowledge gap??</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">b_s =</span> <span class="dv">2</span>, <span class="co"># self benefit</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">g_c =</span> <span class="fl">0.1</span>, <span class="co"># reduces cost of giving fb by this</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">a =</span> <span class="fl">0.5</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">a =</span> <span class="dv">1</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    )) {</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Relabelling to match model forumula</span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    Theta_R <span class="ot">=</span> Strat_r<span class="sc">$</span>Eff</span>
@@ -291,9 +291,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model params</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">3</span>, <span class="co"># cost</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">4</span>, <span class="co"># receive benefit</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">2</span>, <span class="co"># self benefit</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">c =</span> <span class="dv">4</span>, <span class="co"># cost</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_f =</span> <span class="dv">5</span>, <span class="co"># receive benefit</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">b_s =</span> <span class="dv">3</span>, <span class="co"># self benefit</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_q =</span> <span class="fl">0.8</span>, <span class="co"># LLM is 0.8 of decent feedback</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">g_c =</span> <span class="fl">0.1</span>, <span class="co"># reduces cost of giving fb by this, but also reduces self benefit</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">a =</span> <span class="dv">1</span> <span class="co"># assortment</span></span>
@@ -302,9 +302,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
- $ c  : num 3
- $ b_f: num 4
- $ b_s: num 2
+ $ c  : num 4
+ $ b_f: num 5
+ $ b_s: num 3
  $ g_q: num 0.8
  $ g_c: num 0.1
  $ a  : num 1</code></pre>
@@ -321,8 +321,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 2 × 3
   `Payoff to strategy:`    CN    FN
   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt;
-1 CN                        4    -1
-2 FN                        4     1</code></pre>
+1 CN                        5    -1
+2 FN                        5     1</code></pre>
 </div>
 </div>
 <p>The overall fitness of the population is given, for proportion of <span class="math inline">\(p\)</span> cooperators, by <span class="math inline">\(W(p)=2p^2+2p(1-p)=2p\)</span>, so we want to have <span class="math inline">\(p\)</span> as high as possible. But from the point of view of the individual it is much nicer to choose <span class="math inline">\(FN\)</span>.</p>
@@ -339,9 +339,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 3 × 4
   `Payoff to strategy:`    TN    CN    FN
   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 TN                      2.5   3.5  -0.5
-2 CN                      1     4    -1  
-3 FN                      2     4     1  </code></pre>
+1 TN                      3     4.5  -0.5
+2 CN                      1.5   5    -1  
+3 FN                      2.5   5     1  </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -411,18 +411,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 # Rowwise: 
    `Payoff to strategy:`    CN    TN    FN    CS    TS    FS    CO    TO    FO
    &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 CN                      4     1    -1     4     1    -1     2.2   2.2   2.2
- 2 TN                      3.5   2.5  -0.5   3.5   2.5  -0.5   2.7   2.7   2.7
- 3 CO                      3.7   1.7  -0.3   3.7   1.7  -0.3   3.9   2.9   2.9
- 4 TO                      3.7   1.7  -0.3   3.7   1.7  -0.3   2.9   3.9   2.9
- 5 FO                      3.7   1.7  -0.3   3.7   1.7  -0.3   2.9   2.9   3.9
- 6 FN                      4     2     1     4     2     1     3.2   3.2   3.2
- 7 CS                      6.9   3.9   1.9   6.9   3.9   1.9   1.9   1.9   1.9
- 8 TS                      6.4   5.4   2.4   6.4   5.4   2.4   2.4   2.4   2.4
- 9 CB                      6.6   4.6   2.6   6.6   4.6   2.6   3.6   2.6   2.6
-10 TB                      6.6   4.6   2.6   6.6   4.6   2.6   2.6   3.6   2.6
-11 FB                      6.6   4.6   2.6   6.6   4.6   2.6   2.6   2.6   3.6
-12 FS                      6.9   4.9   3.9   6.9   4.9   3.9   2.9   2.9   2.9
+ 1 CN                      5     1.5  -1     5     1.5  -1     3     3     3  
+ 2 TN                      4.5   3    -0.5   4.5   3    -0.5   3.5   3.5   3.5
+ 3 CO                      4.6   2.1  -0.4   4.6   2.1  -0.4   4.6   3.6   3.6
+ 4 TO                      4.6   2.1  -0.4   4.6   2.1  -0.4   3.6   4.6   3.6
+ 5 FO                      4.6   2.1  -0.4   4.6   2.1  -0.4   3.6   3.6   4.6
+ 6 FN                      5     2.5   1     5     2.5   1     4     4     4  
+ 7 CS                      8.6   5.1   2.6   8.6   5.1   2.6   2.6   2.6   2.6
+ 8 TS                      8.1   6.6   3.1   8.1   6.6   3.1   3.1   3.1   3.1
+ 9 CB                      8.2   5.7   3.2   8.2   5.7   3.2   4.2   3.2   3.2
+10 TB                      8.2   5.7   3.2   8.2   5.7   3.2   3.2   4.2   3.2
+11 FB                      8.2   5.7   3.2   8.2   5.7   3.2   3.2   3.2   4.2
+12 FS                      8.6   6.1   4.6   8.6   6.1   4.6   3.6   3.6   3.6
 # ℹ 4 more variables: CB &lt;dbl&gt;, TB &lt;dbl&gt;, FB &lt;dbl&gt;, ExpV &lt;dbl&gt;</code></pre>
 </div>
 </div>
@@ -456,30 +456,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 # Rowwise: 
   `Payoff to strategy:`    CS    FB    FS    TS  ExpV
   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 CS                      6.9   1.9   1.9   3.9  3.65
-2 TS                      6.4   2.4   2.4   5.4  4.15
-3 FB                      6.6   3.6   2.6   4.6  4.35
-4 FS                      6.9   2.9   3.9   4.9  4.65</code></pre>
+1 CS                      8.6   2.6   2.6   5.1  4.72
+2 TS                      8.1   3.1   3.1   6.6  5.22
+3 FB                      8.2   4.2   3.2   5.7  5.32
+4 FS                      8.6   3.6   4.6   6.1  5.72</code></pre>
 </div>
 </div>
 <section id="increasing-self-benefit-in-no-ai-environment" class="level3">
 <h3 class="anchored" data-anchor-id="increasing-self-benefit-in-no-ai-environment">Increasing self benefit in no-AI environment</h3>
-<section id="no-ai-fn-cn-cs.-b_s2" class="level4">
-<h4 class="anchored" data-anchor-id="no-ai-fn-cn-cs.-b_s2">No AI: FN, CN, CS. <span class="math inline">\(b_s=2\)</span></h4>
+<section id="no-ai.-cb_s2" class="level4">
+<h4 class="anchored" data-anchor-id="no-ai.-cb_s2">No AI. <span class="math inline">\(c&gt;b_s=2\)</span></h4>
 <p>Parameters:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">1.25</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
- $ c  : num 3
- $ b_f: num 4
+ $ c  : num 4
+ $ b_f: num 5
  $ b_s: num 2
- $ g_q: num 1.25
+ $ g_q: num 0.8
  $ g_c: num 0.1
  $ a  : num 1</code></pre>
 </div>
@@ -542,22 +541,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="no-ai.-b_s3" class="level4">
-<h4 class="anchored" data-anchor-id="no-ai.-b_s3">No AI. <span class="math inline">\(b_s=3\)</span></h4>
+<section id="no-ai-cb_s4" class="level4">
+<h4 class="anchored" data-anchor-id="no-ai-cb_s4">No AI <span class="math inline">\(c=b_s=4\)</span></h4>
 <p>Parameters:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">1.25</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
- $ c  : num 3
- $ b_f: num 4
- $ b_s: num 3
- $ g_q: num 1.25
+ $ c  : num 4
+ $ b_f: num 5
+ $ b_s: num 4
+ $ g_q: num 0.8
  $ g_c: num 0.1
  $ a  : num 1</code></pre>
 </div>
@@ -620,22 +618,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="no-ai-b_s4" class="level4">
-<h4 class="anchored" data-anchor-id="no-ai-b_s4">No AI <span class="math inline">\(b_s=4\)</span></h4>
+<section id="no-ai-cb_s6" class="level4">
+<h4 class="anchored" data-anchor-id="no-ai-cb_s6">No AI <span class="math inline">\(c&lt;b_s=6\)</span></h4>
 <p>Parameters:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">1.25</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
- $ c  : num 3
- $ b_f: num 4
- $ b_s: num 4
- $ g_q: num 1.25
+ $ c  : num 4
+ $ b_f: num 5
+ $ b_s: num 6
+ $ g_q: num 0.8
  $ g_c: num 0.1
  $ a  : num 1</code></pre>
 </div>
@@ -701,8 +698,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="increasing-self-benefit-in-genai-environment" class="level3">
 <h3 class="anchored" data-anchor-id="increasing-self-benefit-in-genai-environment">Increasing self benefit in GenAI environment</h3>
-<section id="lower-qual-ai-fs-fb-cs.-b_s2" class="level4">
-<h4 class="anchored" data-anchor-id="lower-qual-ai-fs-fb-cs.-b_s2">Lower qual AI: FS, FB, CS. <span class="math inline">\(b_s=2\)</span></h4>
+<section id="with-ai-cb_s2" class="level4">
+<h4 class="anchored" data-anchor-id="with-ai-cb_s2">With AI: <span class="math inline">\(c&gt;b_s=2\)</span></h4>
 <p>Parameters:</p>
 <div class="cell">
 <details>
@@ -713,8 +710,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
- $ c  : num 3
- $ b_f: num 4
+ $ c  : num 4
+ $ b_f: num 5
  $ b_s: num 2
  $ g_q: num 0.8
  $ g_c: num 0.1
@@ -779,21 +776,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="lower-qual-ai-fs-fb-cs.-b_s3" class="level4">
-<h4 class="anchored" data-anchor-id="lower-qual-ai-fs-fb-cs.-b_s3">Lower qual AI: FS, FB, CS. <span class="math inline">\(b_s=3\)</span></h4>
+<section id="with-ai-fs-fb-cs.-cb_s4" class="level4">
+<h4 class="anchored" data-anchor-id="with-ai-fs-fb-cs.-cb_s4">With AI: FS, FB, CS. <span class="math inline">\(c=b_s=4\)</span></h4>
 <p>Parameters:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
 <span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
- $ c  : num 3
- $ b_f: num 4
- $ b_s: num 3
+ $ c  : num 4
+ $ b_f: num 5
+ $ b_s: num 4
  $ g_q: num 0.8
  $ g_c: num 0.1
  $ a  : num 1</code></pre>
@@ -857,21 +854,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="lower-qual-ai-fs-fb-cs.-b_s4" class="level4">
-<h4 class="anchored" data-anchor-id="lower-qual-ai-fs-fb-cs.-b_s4">Lower qual AI: FS, FB, CS. <span class="math inline">\(b_s=4\)</span></h4>
+<section id="with-ai-fs-fb-cs.-cb_s6" class="level4">
+<h4 class="anchored" data-anchor-id="with-ai-fs-fb-cs.-cb_s6">With AI: FS, FB, CS. <span class="math inline">\(c&lt;b_s=6\)</span></h4>
 <p>Parameters:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>g_q <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>p<span class="sc">$</span>b_s <span class="ot">&lt;-</span> <span class="dv">6</span></span>
 <span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 6
- $ c  : num 3
- $ b_f: num 4
- $ b_s: num 4
+ $ c  : num 4
+ $ b_f: num 5
+ $ b_s: num 6
  $ g_q: num 0.8
  $ g_c: num 0.1
  $ a  : num 1</code></pre>
@@ -935,47 +932,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="higher-qual-ai-fs-fb-cs" class="level4">
-<h4 class="anchored" data-anchor-id="higher-qual-ai-fs-fb-cs">Higher qual AI: FS, FB, CS</h4>
 </section>
-</section>
-</section>
-<section id="invasion-normal-form-2x2game" class="level1">
-<h1>Invasion (Normal form 2x2game)</h1>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Invasion dynamics.</span></span>
-<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> egttools <span class="im">as</span> egt</span>
-<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array(r.payoffs_M)</span>
-<span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a>strategies <span class="op">=</span> [egt.behaviors.NormalForm.TwoActions.Cooperator(), </span>
-<span id="cb84-8"><a href="#cb84-8" aria-hidden="true" tabindex="-1"></a>              egt.behaviors.NormalForm.TwoActions.Defector(), </span>
-<span id="cb84-9"><a href="#cb84-9" aria-hidden="true" tabindex="-1"></a>              egt.behaviors.NormalForm.TwoActions.TFT(),</span>
-<span id="cb84-10"><a href="#cb84-10" aria-hidden="true" tabindex="-1"></a>              egt.behaviors.NormalForm.TwoActions.Pavlov(), </span>
-<span id="cb84-11"><a href="#cb84-11" aria-hidden="true" tabindex="-1"></a>              egt.behaviors.NormalForm.TwoActions.GRIM()]</span>
-<span id="cb84-12"><a href="#cb84-12" aria-hidden="true" tabindex="-1"></a>strategy_labels <span class="op">=</span> [strategy.<span class="bu">type</span>().replace(<span class="st">"NFGStrategies::"</span>, <span class="st">''</span>) <span class="cf">for</span> strategy <span class="kw">in</span> strategies]</span>
-<span id="cb84-13"><a href="#cb84-13" aria-hidden="true" tabindex="-1"></a>game <span class="op">=</span> egt.games.NormalFormGame(<span class="dv">100</span>, A, strategies)</span>
-<span id="cb84-14"><a href="#cb84-14" aria-hidden="true" tabindex="-1"></a>Z<span class="op">=</span> <span class="dv">100</span><span class="op">;</span> beta<span class="op">=</span><span class="dv">1</span></span>
-<span id="cb84-15"><a href="#cb84-15" aria-hidden="true" tabindex="-1"></a>evolver <span class="op">=</span> egt.analytical.PairwiseComparison(Z, game)</span>
-<span id="cb84-16"><a href="#cb84-16" aria-hidden="true" tabindex="-1"></a>transition_matrix,fixation_probabilities <span class="op">=</span> evolver.calculate_transition_and_fixation_matrix_sml(beta)</span>
-<span id="cb84-17"><a href="#cb84-17" aria-hidden="true" tabindex="-1"></a>stationary_distribution <span class="op">=</span> egt.utils.calculate_stationary_distribution(transition_matrix.transpose())</span>
-<span id="cb84-18"><a href="#cb84-18" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>), dpi<span class="op">=</span><span class="dv">150</span>)</span>
-<span id="cb84-19"><a href="#cb84-19" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> egt.plotting.draw_invasion_diagram(strategy_labels,</span>
-<span id="cb84-20"><a href="#cb84-20" aria-hidden="true" tabindex="-1"></a>                                              <span class="dv">1</span><span class="op">/</span>Z, fixation_probabilities, stationary_distribution,</span>
-<span id="cb84-21"><a href="#cb84-21" aria-hidden="true" tabindex="-1"></a>                                              node_size<span class="op">=</span><span class="dv">600</span>, </span>
-<span id="cb84-22"><a href="#cb84-22" aria-hidden="true" tabindex="-1"></a>                                              font_size_node_labels<span class="op">=</span><span class="dv">8</span>,</span>
-<span id="cb84-23"><a href="#cb84-23" aria-hidden="true" tabindex="-1"></a>                                              font_size_edge_labels<span class="op">=</span><span class="dv">8</span>,</span>
-<span id="cb84-24"><a href="#cb84-24" aria-hidden="true" tabindex="-1"></a>                                              font_size_sd_labels<span class="op">=</span><span class="dv">8</span>,</span>
-<span id="cb84-25"><a href="#cb84-25" aria-hidden="true" tabindex="-1"></a>                                              edge_width<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb84-26"><a href="#cb84-26" aria-hidden="true" tabindex="-1"></a>                                              min_strategy_frequency<span class="op">=</span><span class="fl">0.00001</span>, </span>
-<span id="cb84-27"><a href="#cb84-27" aria-hidden="true" tabindex="-1"></a>                                              ax<span class="op">=</span>ax)</span>
-<span id="cb84-28"><a href="#cb84-28" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'off'</span>)</span>
-<span id="cb84-29"><a href="#cb84-29" aria-hidden="true" tabindex="-1"></a>plt.show() <span class="co"># display</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
 </section>
 
 </main>

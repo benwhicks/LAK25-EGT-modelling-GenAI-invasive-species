@@ -28,15 +28,15 @@ The environment is balanced by three parameters that guide the payoffs of the di
 - $b_s$ - Benefit to yourself for providing others with feedback (i.e. you learn by providing feedback) 
 - $a$ - Benefit to yourself if you are cooperating with someone with the same strategy as you (i.e. a social benefit, gravitation towards similar learners).
 
-The model initially explores the scenario $c=3,b_f=4, b_s=2,a=1$, and will generally assume that $b_f > c$. We explore varying strategies and varying the value of $b_s$.
+The model initially explores the scenario $c=4,b_f=5, b_s=2,a=1$, and will generally assume that $b_f > c$. We explore varying strategies and varying the value of $b_s$.
 
 In this framework if a player with effort strategy $\Theta_R$ receives feedback from someone with effort strategy $\Theta_P$ they gain some *perceived* value, $V(R|P)$ (read as value to reciever $R$ when they meet provider $P$), out of sharing feedback with a peer: 
 
 $$V(R|P) = \Theta_Pb_f  + \Theta_Rb_s  - \Theta_Rc +a[RP]$$
 
-Where $a[RP]=a$ if $\Theta_R=\Theta_P$, and zero otherwise.
+Where $a[RP]=a$ if $\Theta_R=\Theta_P$, and zero otherwise. This amounts to a preference for working with like-minded peers. 
 
-So the learner gains (or at least perceives to gain) knowledge from the feedback at a level dependent on the providers effort ($b_f\Theta_P$), as well as from providing feedback to them depending their own effort towards cooperation ($b_s\Theta_R$). They incur a cost relative to the effort they put into cooperation ($c\Theta_R$). 
+So the learner gains (or at least perceives to gain) value from the knowledge from the feedback at a level dependent on the providers effort ($b_f\Theta_P$), as well as from providing feedback to them depending their own effort towards cooperation ($b_s\Theta_R$). They incur a cost relative to the effort they put into cooperation ($c\Theta_R$). 
 
 Within this framework there are three strategies that agents can take that we will examine:
 
@@ -88,12 +88,12 @@ get_payoff <- function(
     Strat_r, Strat_p, # expects rows of data frame with columns Eff, AIP, AIS
     p = list(
         # Parameters
-        c = 2, # cost
-        b_f = 3, # receive benefit - c <> b_r might depend on knowledge gap??
-        b_s = 1, # self benefit
+        c = 4, # cost
+        b_f = 5, # receive benefit - c <> b_r might depend on knowledge gap??
+        b_s = 2, # self benefit
         g_q = 0.8, # LLM is 0.8 of decent feedback
         g_c = 0.1, # reduces cost of giving fb by this
-        a = 0.5
+        a = 1
     )) {
     # Relabelling to match model forumula
     Theta_R = Strat_r$Eff
@@ -200,9 +200,9 @@ Initially with $c=4,b_f=5,b_s=2, a=1$.
 ``` {r}
 # Model params
         p = list(
-            c = 3, # cost
-            b_f = 4, # receive benefit
-            b_s = 2, # self benefit
+            c = 4, # cost
+            b_f = 5, # receive benefit
+            b_s = 3, # self benefit
             g_q = 0.8, # LLM is 0.8 of decent feedback
             g_c = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
             a = 1 # assortment
@@ -289,13 +289,12 @@ fetch_payoff_matrix(
 
 ### Increasing self benefit in no-AI environment
 
-#### No AI: FN, CN, CS. $b_s=2$
+#### No AI. $c>b_s=2$
 
 Parameters:
 
 ``` {r}
 p$b_s <- 2
-p$g_q <- 1.25
 glimpse(p)
 ```
 
@@ -333,57 +332,55 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-#### No AI. $b_s=3$
+#### No AI $c=b_s=4$
 
 Parameters:
 
 ``` {r}
-p$g_q <- 1.25
-p$b_s <- 3
-glimpse(p)
-```
-
-``` {r}
-strategies <- c("TN", "CN", "FN")
-payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
-```
-
-
-``` {python}
-
-import numpy as np
-import matplotlib.pyplot as plt
-from egttools.plotting.simplified import plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
-from egttools.utils import calculate_stationary_distribution
-
-payoffs = np.array(r.payoffs_M)
-type_labels = r.strategies
-
-fig, ax = plt.subplots(figsize=(15,10))
-simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search=100, 
-ax=ax)
-
-plot = (simplex.add_axis(ax=ax)
-           .draw_triangle()
-           .draw_gradients(zorder=0)
-           # .add_colorbar()
-           .add_vertex_labels(type_labels)
-           .draw_stationary_points(roots_xy, stability))
-
-ax.axis('off')
-ax.set_aspect('equal')
-plt.xlim((-.05,1.05))
-plt.ylim((-.02, simplex.top_corner + 0.05))
-plt.show()
-```
-
-#### No AI $b_s=4$
-
-Parameters:
-
-``` {r}
-p$g_q <- 1.25
 p$b_s <- 4
+glimpse(p)
+```
+
+``` {r}
+strategies <- c("TN", "CN", "FN")
+payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+```
+
+
+``` {python}
+
+import numpy as np
+import matplotlib.pyplot as plt
+from egttools.plotting.simplified import plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
+from egttools.utils import calculate_stationary_distribution
+
+payoffs = np.array(r.payoffs_M)
+type_labels = r.strategies
+
+fig, ax = plt.subplots(figsize=(15,10))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search=100, 
+ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+           .draw_triangle()
+           .draw_gradients(zorder=0)
+           # .add_colorbar()
+           .add_vertex_labels(type_labels)
+           .draw_stationary_points(roots_xy, stability))
+
+ax.axis('off')
+ax.set_aspect('equal')
+plt.xlim((-.05,1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
+```
+
+#### No AI $c<b_s=6$
+
+Parameters:
+
+``` {r}
+p$b_s <- 6
 glimpse(p)
 ```
 
@@ -424,7 +421,8 @@ plt.show()
 
 ### Increasing self benefit in GenAI environment
 
-#### Lower qual AI: FS, FB, CS. $b_s=2$
+
+#### With AI: $c>b_s=2$
 
 Parameters:
 
@@ -468,51 +466,7 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-#### Lower qual AI: FS, FB, CS. $b_s=3$
-
-Parameters:
-
-``` {r}
-p$g_q <- 0.8
-p$b_s <- 3
-glimpse(p)
-```
-
-``` {r}
-strategies <- c("FB", "CS", "FS")
-payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
-```
-
-
-``` {python}
-
-import numpy as np
-import matplotlib.pyplot as plt
-from egttools.plotting.simplified import plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
-from egttools.utils import calculate_stationary_distribution
-
-payoffs = np.array(r.payoffs_M)
-type_labels = r.strategies
-
-fig, ax = plt.subplots(figsize=(15,10))
-simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search=100, 
-ax=ax)
-
-plot = (simplex.add_axis(ax=ax)
-           .draw_triangle()
-           .draw_gradients(zorder=0)
-           # .add_colorbar()
-           .add_vertex_labels(type_labels)
-           .draw_stationary_points(roots_xy, stability))
-
-ax.axis('off')
-ax.set_aspect('equal')
-plt.xlim((-.05,1.05))
-plt.ylim((-.02, simplex.top_corner + 0.05))
-plt.show()
-```
-
-#### Lower qual AI: FS, FB, CS. $b_s=4$
+#### With AI: FS, FB, CS. $c=b_s=4$
 
 Parameters:
 
@@ -557,43 +511,47 @@ plt.show()
 ```
 
 
+#### With AI: FS, FB, CS. $c<b_s=6$
 
+Parameters:
 
-#### Higher qual AI: FS, FB, CS
+``` {r}
+p$g_q <- 0.8
+p$b_s <- 6
+glimpse(p)
+```
 
+``` {r}
+strategies <- c("FB", "CS", "FS")
+payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+```
 
-# Invasion (Normal form 2x2game)
 
 ``` {python}
-#| eval: false
-# Invasion dynamics.
+
 import numpy as np
-import egttools as egt
 import matplotlib.pyplot as plt
+from egttools.plotting.simplified import plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
+from egttools.utils import calculate_stationary_distribution
 
-A = np.array(r.payoffs_M)
-strategies = [egt.behaviors.NormalForm.TwoActions.Cooperator(), 
-              egt.behaviors.NormalForm.TwoActions.Defector(), 
-              egt.behaviors.NormalForm.TwoActions.TFT(),
-              egt.behaviors.NormalForm.TwoActions.Pavlov(), 
-              egt.behaviors.NormalForm.TwoActions.GRIM()]
-strategy_labels = [strategy.type().replace("NFGStrategies::", '') for strategy in strategies]
-game = egt.games.NormalFormGame(100, A, strategies)
-Z= 100; beta=1
-evolver = egt.analytical.PairwiseComparison(Z, game)
-transition_matrix,fixation_probabilities = evolver.calculate_transition_and_fixation_matrix_sml(beta)
-stationary_distribution = egt.utils.calculate_stationary_distribution(transition_matrix.transpose())
-fig, ax = plt.subplots(figsize=(5, 5), dpi=150)
-G = egt.plotting.draw_invasion_diagram(strategy_labels,
-                                              1/Z, fixation_probabilities, stationary_distribution,
-                                              node_size=600, 
-                                              font_size_node_labels=8,
-                                              font_size_edge_labels=8,
-                                              font_size_sd_labels=8,
-                                              edge_width=1,
-                                              min_strategy_frequency=0.00001, 
-                                              ax=ax)
-plt.axis('off')
-plt.show() # display
+payoffs = np.array(r.payoffs_M)
+type_labels = r.strategies
 
+fig, ax = plt.subplots(figsize=(15,10))
+simplex, gradient_function, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(payoffs, nb_of_initial_points_for_root_search=100, 
+ax=ax)
+
+plot = (simplex.add_axis(ax=ax)
+           .draw_triangle()
+           .draw_gradients(zorder=0)
+           # .add_colorbar()
+           .add_vertex_labels(type_labels)
+           .draw_stationary_points(roots_xy, stability))
+
+ax.axis('off')
+ax.set_aspect('equal')
+plt.xlim((-.05,1.05))
+plt.ylim((-.02, simplex.top_corner + 0.05))
+plt.show()
 ```
+
