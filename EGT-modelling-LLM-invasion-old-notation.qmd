@@ -7,7 +7,9 @@ format:
 editor: visual
 ---
 
-# Modelling cooperation amongst peers
+# EGT modelling of cooperation in classroom with LLM
+
+## Modelling cooperation amongst peers
 
 The model examines the relationship between peers in a learning environment providing feedback on each others work. In this model the agents are students which we will refer to as *learners*, and interactions are between learners choosing to provide and receive feedback from each other. We use $P$ to indicate the learner providing feedback, and $R$ the learner receiving feedback.
 
@@ -18,19 +20,19 @@ The strategy of interacting with other learners is outlined initially with a sin
 The environment is balanced by three parameters that guide the payoffs of the different strategies:
 
 - $c$ - Cost of cooperation 
-- $f$ - Benefit to yourself from others providing feedback / cooperating with you.
-- $b$ - Benefit to yourself for providing others with feedback (i.e. you learn by providing feedback) 
+- $b_f$ - Benefit to yourself from others providing feedback / cooperating with you.
+- $b_s$ - Benefit to yourself for providing others with feedback (i.e. you learn by providing feedback) 
 - $a$ - Benefit to yourself if you are cooperating with someone with the same strategy as you (i.e. a social benefit, gravitation towards similar learners).
 
-The model initially explores the scenario $c=4,f=5, b=2,a=1$, and will generally assume that $f > c$. We explore varying strategies and varying the value of $b$.
+The model initially explores the scenario $c=4,b_f=5, b_s=2,a=1$, and will generally assume that $b_f > c$. We explore varying strategies and varying the value of $b_s$.
 
 In this framework if a player with effort strategy $\Theta_R$ receives feedback from someone with effort strategy $\Theta_P$ they gain some *perceived* value, $V(R|P)$ (read as value to reciever $R$ when they meet provider $P$), out of sharing feedback with a peer: 
 
-$$V(R|P) = \Theta_Pf  + \Theta_Rb  - \Theta_Rc +a[RP]$$
+$$V(R|P) = \Theta_Pb_f  + \Theta_Rb_s  - \Theta_Rc +a[RP]$$
 
 Where $a[RP]=a$ if $\Theta_R=\Theta_P$, and zero otherwise. This amounts to a preference for working with like-minded peers. 
 
-So the learner gains (or at least perceives to gain) value from the knowledge from the feedback at a level dependent on the providers effort ($f\Theta_P$), as well as from providing feedback to them depending their own effort towards cooperation ($b\Theta_R$). They incur a cost relative to the effort they put into cooperation ($c\Theta_R$). 
+So the learner gains (or at least perceives to gain) value from the knowledge from the feedback at a level dependent on the providers effort ($b_f\Theta_P$), as well as from providing feedback to them depending their own effort towards cooperation ($b_s\Theta_R$). They incur a cost relative to the effort they put into cooperation ($c\Theta_R$). 
 
 Within this framework there are three strategies that agents can take that we will examine:
 
@@ -45,26 +47,26 @@ To introduce GenAI we provide two new strategy parameters, indicating the use of
 
 Additionally, there are two new environment parameters:
 
-- $q$: The quality of the GenAI for feedback.  
-- $k$: The reduced cost of providing feedback using AI.  
+- $g_q$: The quality of the GenAI for feedback.  
+- $g_c$: The reduced cost of providing feedback using AI.  
 
-We use two values, $q=0.8$ to indicate slightly worse than what the peer would provide (with full effort), or $q=1.25$ for slightly better than what you would expect from peers. We use $k=0.1$ to indicate a low cost (compared to providing the feedback yourself).
+We use two values, $g_q=0.8$ to indicate slightly worse than what the peer would provide (with full effort), or $g_q=1.25$ for slightly better than what you would expect from peers. We use $g_c=0.1$ to indicate a low cost (compared to providing the feedback yourself).
 
 This adds four new strategies of GenAI use:
 
 - $N$: No GenAI use, $\Pi=0,\Gamma=0$.
-- $S$: Using GenAI for only your own work, $\Pi=0,\Gamma=1$. This incurs an additional cost $c\times k$, but also provides a new benefit $f \times q$. However, this benefit cancels out any benefit of receiving feedback from someone who is using GenAI to produce the feedback. This means that when $\Gamma_R=1$ and $\Pi_P=1$ you can only get this benefit once. 
-- $O$: Using GenAI only to provide feedback for others, $\Pi=1, \Gamma = 0$. This reduces the cost of providing feedback to $c \times k$ (as $0<k<1$), but also changes the value of the feedback to $f \times q$ instead of $f \times \Theta_P$.
+- $S$: Using GenAI for only your own work, $\Pi=0,\Gamma=1$. This incurs an additional cost $c\times g_c$, but also provides a new benefit $b_f \times g_q$. However, this benefit cancels out any benefit of receiving feedback from someone who is using GenAI to produce the feedback. This means that when $\Gamma_R=1$ and $\Pi_P=1$ you can only get this benefit once. 
+- $O$: Using GenAI only to provide feedback for others, $\Pi=1, \Gamma = 0$. This reduces the cost of providing feedback to $c \times g_c$ (as $0<g_c<1$), but also changes the value of the feedback to $b_f \times g_q$ instead of $b_f \times \Theta_P$.
 - $B$: Using GenAI for yourself and others, $\Pi=1,\Gamma=1$. This combines the effects of $S$ and $O$.
 
 We then combine the cooperation strategies and GenAI strategies. So $CN$ indicates that the learner is fully cooperating but not using GenAI for themselves or for providing feedback. $FS$ would indicate that a Free-rider (no effort towards cooperation) is using the GenAI for their own feedback. Note that the strategies $FO$ and $FB$ do not make sense - a Free-rider is not providing feedback for others so would not bother using GenAI for it. They might move towards $TS$ or $TB$ however. 
 
 The new, extended value calculation is more complicated:
 
-$$V(R|P) = (1-\Gamma_R)[\Pi_P q f + (1-\Pi_P)\Theta_P f] \\
-+ \Gamma_R[q f-kc + (1-\Pi_P)\Theta_Pf] \\
-+(1-\Pi_R)\Theta_R(b-c) \\
--\Pi_R k c + a[RP]$$
+$$V(R|P) = (1-\Gamma_R)[\Pi_P g_q b_f + (1-\Pi_P)\Theta_P b_f] \\
++ \Gamma_R[g_q b_f-g_cc + (1-\Pi_P)\Theta_Pb_f] \\
++(1-\Pi_R)\Theta_R(b_s-c) \\
+-\Pi_R g_c c + a_{RP}$$
 
 Where $a[RP]$ returns the value of $a$ is $\Pi_R=\Pi_P$ and $\Theta_R=\Theta_P$, and zero otherwise. 
 
@@ -83,10 +85,10 @@ get_payoff <- function(
     p = list(
         # Parameters
         c = 4, # cost
-        f = 5, # receive benefit - c <> b_r might depend on knowledge gap??
-        b = 2, # self benefit
-        q = 0.8, # LLM is 0.8 of decent feedback
-        k = 0.1, # reduces cost of giving fb by this
+        b_f = 5, # receive benefit - c <> b_r might depend on knowledge gap??
+        b_s = 2, # self benefit
+        g_q = 0.8, # LLM is 0.8 of decent feedback
+        g_c = 0.1, # reduces cost of giving fb by this
         a = 1
     )) {
     # Relabelling to match model forumula
@@ -96,16 +98,16 @@ get_payoff <- function(
     Pi_R = Strat_r$AIP
     Pi_P = Strat_p$AIP
     
-    # V.Gamma_R  <-  Gamma_R * (p$q * p$f - p$k * p$c)
-    # V.Pi_P <-  (1-Pi_P) * max(Theta_P + Gamma_R * p$q, Gamma_R * p$q) * p$f + (Pi_P * p$k * p$f) * (1 - Gamma_R)
-    # V.Pi_R <-  (1-Pi_R) * Theta_R * (p$b - p$c) - Pi_R * p$k * p$c
+    # V.Gamma_R  <-  Gamma_R * (p$g_q * p$b_f - p$g_c * p$c)
+    # V.Pi_P <-  (1-Pi_P) * max(Theta_P + Gamma_R * p$g_q, Gamma_R * p$g_q) * p$b_f + (Pi_P * p$g_c * p$b_f) * (1 - Gamma_R)
+    # V.Pi_R <-  (1-Pi_R) * Theta_R * (p$b_s - p$c) - Pi_R * p$g_c * p$c
 
     V.Gamma_R0 <- (1-Gamma_R) * (
-        Pi_P * p$q * p$f + (1-Pi_P) * (Theta_P * p$f)
+        Pi_P * p$g_q * p$b_f + (1-Pi_P) * (Theta_P * p$b_f)
         )
-    V.Gamma_R1 <- Gamma_R*(p$q * p$f - p$k*p$c + (1-Pi_P) * Theta_P * p$f)
-    V.Pi_R0 <- (1 - Pi_R) * Theta_R * (p$b - p$c)
-    V.Pi_R1 <- -Pi_R * p$k * p$c
+    V.Gamma_R1 <- Gamma_R*(p$g_q * p$b_f - p$g_c*p$c + (1-Pi_P) * Theta_P * p$b_f)
+    V.Pi_R0 <- (1 - Pi_R) * Theta_R * (p$b_s - p$c)
+    V.Pi_R1 <- -Pi_R * p$g_c * p$c
     
     same_Pi_strat <- if_else(Pi_R == Pi_P, 1, 0)
     same_Theta_strat <- if_else(Theta_R == Theta_P, 1, 0)
@@ -138,10 +140,10 @@ build_payoff_matrix <- function(
         # Parameters
         p = list(
             c = 2, # cost
-            f = 2, # receive benefit
-            b = 1, # self benefit
-            q = 0.8, # LLM is 0.8 of decent feedback
-            k = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
+            b_f = 2, # receive benefit
+            b_s = 1, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1 # reduces cost of giving fb by this, but also reduces self benefit
         )
 ) {
     N_strategies <- nrow(S)
@@ -185,27 +187,27 @@ fetch_payoff_matrix <- function(strategies, p, as_df = FALSE,
 
 
 
-# No AI
+## No AI
 
 Comparing Free-rider, Token (half effort) and Cooperator.
 
-Initially with $c=4,f=5,b=2, a=1$. 
+Initially with $c=4,b_f=5,b_s=2, a=1$. 
 
 ``` {r}
 # Model params
         p = list(
             c = 4, # cost
-            f = 5, # receive benefit
-            b = 2, # self benefit
-            q = 0.8, # LLM is 0.8 of decent feedback
-            k = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
+            b_f = 5, # receive benefit
+            b_s = 2, # self benefit
+            g_q = 0.8, # LLM is 0.8 of decent feedback
+            g_c = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
             a = 1 # assortment
         )
 glimpse(p)
 ```
 
 Comparing just $FN$ and $CN$ (i.e. Hawk-Dove)
-``` {r no-AI-2player-low-b}
+``` {r no-AI-2player-low-b_s}
 strategies <- c("CN", "FN")
 fetch_payoff_matrix(strategies, p, as_df = T)
 ```
@@ -214,7 +216,7 @@ The overall fitness of the population is given, for proportion of $p$ cooperator
 
 We can also include TN to see how the dynamics evolve over time. 
 
-``` {r no-AI-3player-low-b}
+``` {r no-AI-3player-low-b_s}
 strategies <- c("TN", "CN", "FN")
 payoffs_df <- fetch_payoff_matrix(strategies, p, as_df = T)
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
@@ -284,12 +286,12 @@ fetch_payoff_matrix(
 
 ### Increasing self benefit in no-AI environment
 
-#### No AI. $c>b=2$
+#### No AI. $c>b_s=2$
 
 Parameters:
 
 ``` {r}
-p$b <- 2
+p$b_s <- 2
 glimpse(p)
 ```
 
@@ -327,12 +329,12 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-#### No AI $c=b=4$
+#### No AI $c=b_s=4$
 
 Parameters:
 
 ``` {r}
-p$b <- 4
+p$b_s <- 4
 glimpse(p)
 ```
 
@@ -370,12 +372,12 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-#### No AI $c<b=6$
+#### No AI $c<b_s=6$
 
 Parameters:
 
 ``` {r}
-p$b <- 6
+p$b_s <- 6
 glimpse(p)
 ```
 
@@ -417,13 +419,13 @@ plt.show()
 ### Increasing self benefit in GenAI environment
 
 
-#### With AI: $c>b=2$
+#### With AI: $c>b_s=2$
 
 Parameters:
 
 ``` {r}
-p$q <- 0.8
-p$b <- 2
+p$g_q <- 0.8
+p$b_s <- 2
 glimpse(p)
 ```
 
@@ -461,13 +463,13 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-#### With AI: FS, FB, CS. $c=b=4$
+#### With AI: FS, FB, CS. $c=b_s=4$
 
 Parameters:
 
 ``` {r}
-p$q <- 0.8
-p$b <- 4
+p$g_q <- 0.8
+p$b_s <- 4
 glimpse(p)
 ```
 
@@ -506,13 +508,13 @@ plt.show()
 ```
 
 
-#### With AI: FS, FB, CS. $c<b=6$
+#### With AI: FS, FB, CS. $c<b_s=6$
 
 Parameters:
 
 ``` {r}
-p$q <- 0.8
-p$b <- 6
+p$g_q <- 0.8
+p$b_s <- 6
 glimpse(p)
 ```
 
