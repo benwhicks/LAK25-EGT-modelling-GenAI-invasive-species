@@ -4,6 +4,8 @@ format:
     html:
         code-fold: true
         code-summary: "Show the code"
+execute: 
+  warning: false
 editor: visual
 ---
 
