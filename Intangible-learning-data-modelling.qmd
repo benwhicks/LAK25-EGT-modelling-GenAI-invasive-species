@@ -15,51 +15,51 @@ The model examines the relationship between peers in a learning environment prov
 
 The strategy of interacting with other learners is outlined initially with a single parameter:
 
--   $\Theta \in[0,1]$: Level of cooperative effort - that is how much effort a learner puts into providing feedback to another learner. The more effort towards cooperation the more benefit a peer receives from the feedback, and the more cost is incurred by the provider. $\Theta_P$ indicates the collaborative effort of the learner providing the feedback, and $\Theta_R$ the collaborative effort of the incoming feedback learner receiving the feedback.
+- $\Theta \in[0,1]$: Level of cooperative effort - that is how much effort a learner puts into providing feedback to another learner. The more effort towards cooperation the more benefit a peer receives from the feedback, and the more cost is incurred by the provider. $\Theta_P$ indicates the collaborative effort of the learner providing the feedback, and $\Theta_R$ the collaborative effort of the incoming feedback learner receiving the feedback. 
 
 The environment is balanced by three parameters that guide the payoffs of the different strategies:
 
--   $c$ - Cost of cooperation
--   $f$ - Benefit to yourself from others providing feedback / cooperating with you.
--   $b$ - Benefit to yourself for providing others with feedback (i.e. you learn by providing feedback)
--   $a$ - Benefit to yourself if you are cooperating with someone with the same strategy as you (i.e. a social benefit, gravitation towards similar learners).
+- $c$ - Cost of cooperation 
+- $f$ - Benefit to yourself from others providing feedback / cooperating with you.
+- $b$ - Benefit to yourself for providing others with feedback (i.e. you learn by providing feedback) 
+- $a$ - Benefit to yourself if you are cooperating with someone with the same strategy as you (i.e. a social benefit, gravitation towards similar learners).
 
 The model initially explores the scenario $c=4,f=5, b=2,a=1$, and will generally assume that $f > c$. We explore varying strategies and varying the value of $b$.
 
-In this framework if a player with effort strategy $\Theta_R$ receives feedback from someone with effort strategy $\Theta_P$ they gain some *perceived* value, $V(R|P)$ (read as value to reciever $R$ when they meet provider $P$), out of sharing feedback with a peer:
+In this framework if a player with effort strategy $\Theta_R$ receives feedback from someone with effort strategy $\Theta_P$ they gain some *perceived* value, $V(R|P)$ (read as value to reciever $R$ when they meet provider $P$), out of sharing feedback with a peer: 
 
 $$V(R|P) = \Theta_Pf  + \Theta_Rb  - \Theta_Rc +a[RP]$$
 
-Where $a[RP]=a$ if $\Theta_R=\Theta_P$, and zero otherwise. This amounts to a preference for working with like-minded peers.
+Where $a[RP]=a$ if $\Theta_R=\Theta_P$, and zero otherwise. This amounts to a preference for working with like-minded peers. 
 
-So the learner gains (or at least perceives to gain) value from the knowledge from the feedback at a level dependent on the providers effort ($f\Theta_P$), as well as from providing feedback to them depending their own effort towards cooperation ($b\Theta_R$). They incur a cost relative to the effort they put into cooperation ($c\Theta_R$).
+So the learner gains (or at least perceives to gain) value from the knowledge from the feedback at a level dependent on the providers effort ($f\Theta_P$), as well as from providing feedback to them depending their own effort towards cooperation ($b\Theta_R$). They incur a cost relative to the effort they put into cooperation ($c\Theta_R$). 
 
 Within this framework there are three strategies that agents can take that we will examine:
 
--   $C$: Cooperation, where cooperative effort is highest, $\Theta_C=1$
--   $T$: Token-effort, where cooperative effort is half-way, $\Theta_T=0.5$
--   $F$: Free-rider, with no cooperative effort, $\Theta_F=0$
+- $C$: Cooperation, where cooperative effort is highest, $\Theta_C=1$
+- $T$: Token-effort, where cooperative effort is half-way, $\Theta_T=0.5$
+- $F$: Free-rider, with no cooperative effort, $\Theta_F=0$
 
-To introduce GenAI we provide two new strategy parameters, indicating the use of GenAI for providing feedback to others, or using GenAI to supplement feedback a learner receives:
+To introduce GenAI we provide two new strategy parameters, indicating the use of GenAI for providing feedback to others, or using GenAI to supplement feedback a learner receives: 
 
--   $\Pi\in\{0,1\}$: The use of GenAI to provide feedback (1) or not (0). $\Pi_P$ indicates the choice of the provider of feedback.
--   $\Gamma \in \{0,1\}$: The use of GenAI to analyse your own work (1) or not (0). $\Gamma_R$ indicates the choice of the receiver.
+- $\Pi\in\{0,1\}$: The use of GenAI to provide feedback (1) or not (0). $\Pi_P$ indicates the choice of the provider of feedback. 
+- $\Gamma \in \{0,1\}$: The use of GenAI to analyse your own work (1) or not (0). $\Gamma_R$ indicates the choice of the receiver. 
 
 Additionally, there are two new environment parameters:
 
--   $q$: The quality of the GenAI for feedback.\
--   $k$: The reduced cost of providing feedback using AI.
+- $q$: The quality of the GenAI for feedback.  
+- $k$: The reduced cost of providing feedback using AI.  
 
 We use two values, $q=0.8$ to indicate slightly worse than what the peer would provide (with full effort), or $q=1.25$ for slightly better than what you would expect from peers. We use $k=0.1$ to indicate a low cost (compared to providing the feedback yourself).
 
 This adds four new strategies of GenAI use:
 
--   $N$: No GenAI use, $\Pi=0,\Gamma=0$.
--   $S$: Using GenAI for only your own work, $\Pi=0,\Gamma=1$. This incurs an additional cost $c\times k$, but also provides a new benefit $f \times q$. However, this benefit cancels out any benefit of receiving feedback from someone who is using GenAI to produce the feedback. This means that when $\Gamma_R=1$ and $\Pi_P=1$ you can only get this benefit once.
--   $O$: Using GenAI only to provide feedback for others, $\Pi=1, \Gamma = 0$. This reduces the cost of providing feedback to $c \times k$ (as $0<k<1$), but also changes the value of the feedback to $f \times q$ instead of $f \times \Theta_P$.
--   $B$: Using GenAI for yourself and others, $\Pi=1,\Gamma=1$. This combines the effects of $S$ and $O$.
+- $N$: No GenAI use, $\Pi=0,\Gamma=0$.
+- $S$: Using GenAI for only your own work, $\Pi=0,\Gamma=1$. This incurs an additional cost $c\times k$, but also provides a new benefit $f \times q$. However, this benefit cancels out any benefit of receiving feedback from someone who is using GenAI to produce the feedback. This means that when $\Gamma_R=1$ and $\Pi_P=1$ you can only get this benefit once. 
+- $O$: Using GenAI only to provide feedback for others, $\Pi=1, \Gamma = 0$. This reduces the cost of providing feedback to $c \times k$ (as $0<k<1$), but also changes the value of the feedback to $f \times q$ instead of $f \times \Theta_P$.
+- $B$: Using GenAI for yourself and others, $\Pi=1,\Gamma=1$. This combines the effects of $S$ and $O$.
 
-We then combine the cooperation strategies and GenAI strategies. So $CN$ indicates that the learner is fully cooperating but not using GenAI for themselves or for providing feedback. $FS$ would indicate that a Free-rider (no effort towards cooperation) is using the GenAI for their own feedback. Note that the strategies $FO$ and $FB$ do not make sense - a Free-rider is not providing feedback for others so would not bother using GenAI for it. They might move towards $TS$ or $TB$ however.
+We then combine the cooperation strategies and GenAI strategies. So $CN$ indicates that the learner is fully cooperating but not using GenAI for themselves or for providing feedback. $FS$ would indicate that a Free-rider (no effort towards cooperation) is using the GenAI for their own feedback. Note that the strategies $FO$ and $FB$ do not make sense - a Free-rider is not providing feedback for others so would not bother using GenAI for it. They might move towards $TS$ or $TB$ however. 
 
 The new, extended value calculation is more complicated:
 
@@ -68,11 +68,14 @@ $$V(R|P) = (1-\Gamma_R)[\Pi_P q f + (1-\Pi_P)\Theta_P f] \\
 +(1-\Pi_R)\Theta_R(b-c) \\
 -\Pi_R k c + a[RP]$$
 
-Where $a[RP]$ returns the value of $a$ is $\Pi_R=\Pi_P$ and $\Theta_R=\Theta_P$, and zero otherwise.
+Where $a[RP]$ returns the value of $a$ is $\Pi_R=\Pi_P$ and $\Theta_R=\Theta_P$, and zero otherwise. 
 
-It takes a bit of looking, but the above formula, for $\Gamma_R=\Pi_R=\Pi_P=0$ this formula reduces to the non-GenAI scenario (note that $\Gamma_P$ is irrelevant for calculating the receivers payoff). This game is instatiated in the code below:
+It takes a bit of looking, but the above formula, for $\Gamma_R=\Pi_R=\Pi_P=0$ this formula reduces to the non-GenAI scenario (note that $\Gamma_P$ is irrelevant for calculating the receivers payoff).
+This game is instatiated in the code below:
 
-```{r creating-game}
+
+
+``` {r creating-game}
 library(tidyverse)
 # library(EvolutionaryGames)
 
@@ -118,7 +121,7 @@ get_payoff <- function(
 }
 ```
 
-```{r game-functions}
+``` {r game-functions}
 # game modelling
 all_strategies <- tribble(
     ~Label, ~Eff, ~AIS, ~AIP,
@@ -185,13 +188,15 @@ fetch_payoff_matrix <- function(strategies, p, as_df = FALSE,
 }
 ```
 
+
+
 # No AI
 
 Comparing Free-rider, Token (half effort) and Cooperator.
 
-Initially with $c=4,f=5,b=2, a=1$.
+Initially with $c=4,f=5,b=2, a=1$. 
 
-```{r}
+``` {r}
 # Model params
         p = list(
             c = 4, # cost
@@ -205,17 +210,16 @@ glimpse(p)
 ```
 
 Comparing just $FN$ and $CN$ (i.e. Hawk-Dove)
-
-```{r no-AI-2player-low-b}
+``` {r no-AI-2player-low-b}
 strategies <- c("CN", "FN")
 fetch_payoff_matrix(strategies, p, as_df = T)
 ```
 
-The overall fitness of the population is given, for proportion of $p$ cooperators, by $W(p)=2p^2+2p(1-p)=2p$, so we want to have $p$ as high as possible. But from the point of view of the individual it is much nicer to choose $FN$.
+The overall fitness of the population is given, for proportion of $p$ cooperators, by $W(p)=2p^2+2p(1-p)=2p$, so we want to have $p$ as high as possible. But from the point of view of the individual it is much nicer to choose $FN$. 
 
-We can also include TN to see how the dynamics evolve over time.
+We can also include TN to see how the dynamics evolve over time. 
 
-```{r no-AI-3player-low-b}
+``` {r no-AI-3player-low-b}
 strategies <- c("TN", "CN", "FN")
 payoffs_df <- fetch_payoff_matrix(strategies, p, as_df = T)
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
@@ -223,7 +227,8 @@ payoffs_df
 strategies <- c("T", "C", "F")
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -257,15 +262,15 @@ From this we can see that a population evenly mixed between the three strategies
 
 Three plots each for lower AI quality and higher AI quality. Many combos, so assumptions about behaviour:
 
-```{r}
+``` {r}
 fetch_payoff_matrix(
     all_strategies$Label, p, as_df = T, add_exp_V = T) |> arrange(ExpV)
 ```
 
--   For any strategy $X$, $E[V(XS)]>E[V(XO)]>E[V(XN)]$, so GenAI strategies of none, $XN$, or others only, $XO$, are ignored. This is the high cost benefit ratio of using the GenAI for your own feedback. Maybe a supplementary proof??
--   $FB=TB=CB$, so these will be treated as $FB$. Note that we have used $FB$ as this is not really putting in effort to feedback - the GenAI is being used to provide the feedback.
+- For any strategy $X$, $E[V(XS)]>E[V(XO)]>E[V(XN)]$, so GenAI strategies of none, $XN$, or others only, $XO$, are ignored. This is the high cost benefit ratio of using the GenAI for your own feedback. Maybe a supplementary proof??
+- $FB=TB=CB$, so these will be treated as $FB$. Note that we have used $FB$ as this is not really putting in effort to feedback - the GenAI is being used to provide the feedback. 
 
-```{r}
+``` {r}
 interesting_strategies <- all_strategies |> 
     filter(!str_detect(Label, "O|N"), 
            Label != "TB", Label != "CB") |> 
@@ -276,10 +281,12 @@ interesting_strategies
 
 This leaves `r length(interesting_strategies)`: `r str_c()`,
 
-```{r}
+``` {r}
 fetch_payoff_matrix(
     interesting_strategies, p, as_df = T, add_exp_V = T) |> arrange(ExpV)
 ```
+
+
 
 ### Increasing self benefit in no-AI environment
 
@@ -287,17 +294,18 @@ fetch_payoff_matrix(
 
 Parameters:
 
-```{r}
+``` {r}
 p$b <- 2
 glimpse(p)
 ```
 
-```{r}
+``` {r}
 strategies <- c("TN", "CN", "FN")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -329,17 +337,18 @@ plt.show()
 
 Parameters:
 
-```{r}
+``` {r}
 p$b <- 4
 glimpse(p)
 ```
 
-```{r}
+``` {r}
 strategies <- c("TN", "CN", "FN")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -371,17 +380,18 @@ plt.show()
 
 Parameters:
 
-```{r}
+``` {r}
 p$b <- 6
 glimpse(p)
 ```
 
-```{r}
+``` {r}
 strategies <- c("TN", "CN", "FN")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -409,24 +419,27 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
+
 ### Increasing self benefit in GenAI environment
+
 
 #### With AI: $c>b=2$
 
 Parameters:
 
-```{r}
+``` {r}
 p$q <- 0.8
 p$b <- 2
 glimpse(p)
 ```
 
-```{r}
+``` {r}
 strategies <- c("FB", "CS", "FS")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -458,18 +471,19 @@ plt.show()
 
 Parameters:
 
-```{r}
+``` {r}
 p$q <- 0.8
 p$b <- 4
 glimpse(p)
 ```
 
-```{r}
+``` {r}
 strategies <- c("FB", "CS", "FS")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -497,22 +511,24 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
+
 #### With AI: FS, FB, CS. $c<b=6$
 
 Parameters:
 
-```{r}
+``` {r}
 p$q <- 0.8
 p$b <- 6
 glimpse(p)
 ```
 
-```{r}
+``` {r}
 strategies <- c("FB", "CS", "FS")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -544,18 +560,19 @@ plt.show()
 
 Parameters:
 
-```{r}
+``` {r}
 p$q <- 2
 p$b <- 6
 glimpse(p)
 ```
 
-```{r}
+``` {r}
 strategies <- c("FB", "CS", "FS")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
 ```
 
-```{python}
+
+``` {python}
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -583,266 +600,5 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-# Running with sim instead of gradient - crashes in python
-
-#### With AI: FS, FB, CS. $c<b=6$
-
-Parameters:
-
-```{r}
-p$q <- 0.8
-p$b <- 6
-glimpse(p)
-```
-
-```{r}
-strategies <- c("FB", "CS", "FS")
-payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
-```
-
-```{python}
-#| eval: false
-
-import numpy as np
-import matplotlib.pyplot as plt
-from egttools.plotting.simplified import plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
-from egttools.utils import calculate_stationary_distribution
-from egttools.plotting.simplified import plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
-
-payoffs = np.array(r.payoffs_M)
-type_labels = r.strategies
-
-Z = 100
-beta = 1
-mu = 1/Z
-fig, ax = plt.subplots(figsize=(12,10))
-
-simplex, gradient_functionm, game, evolver = plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots(payoff_matrix=payoffs,
-                                                                                                             group_size=2,
-                                                                                                             population_size=Z,
-                                                                                                             beta=beta,
-                                                                                                             ax=ax)
-
-transitions = evolver.calculate_transition_matrix(beta=beta, mu=mu)
-sd = egt.utils.calculate_stationary_distribution(transitions.transpose())
-
-plot = (simplex
-           .draw_triangle()
-           .add_vertex_labels(type_labels, epsilon_bottom=0.1, epsilon_top=0.03)
-           .draw_stationary_distribution(sd, alpha=1, shrink=0.5,
-                                         edgecolors='gray', cmap='binary', shading='gouraud', zorder=0)
-           .draw_gradients(zorder=2, linewidth=1.5)
-           .add_colorbar(shrink=0.5)
-          )
-
-ax.axis('off')
-ax.set_aspect('equal')
-
-plt.xlim((-.05,1.05))
-plt.ylim((-.02, simplex.top_corner + 0.05))
-```
-
-#### With superior AI: FS, FB, CS. $c<b=6, q=2$
-
-Parameters:
-
-```{r}
-p$q <- 2
-p$b <- 6
-glimpse(p)
-```
-
-```{r}
-strategies <- c("FB", "CS", "FS")
-payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
-```
-
-```{python}
-#| eval: false
 
 
-import numpy as np
-import matplotlib.pyplot as plt
-from egttools.plotting.simplified import plot_replicator_dynamics_in_simplex, plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
-from egttools.utils import calculate_stationary_distribution
-from egttools.plotting.simplified import plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots
-
-payoffs = np.array(r.payoffs_M)
-type_labels = r.strategies
-
-Z = 100
-beta = 1
-mu = 1/Z
-fig, ax = plt.subplots(figsize=(12,10))
-
-simplex, gradient_functionm, game, evolver = plot_pairwise_comparison_rule_dynamics_in_simplex_without_roots(payoff_matrix=payoffs,
-                                                                                                             group_size=2,
-                                                                                                             population_size=Z,
-                                                                                                             beta=beta,
-                                                                                                             ax=ax)
-
-transitions = evolver.calculate_transition_matrix(beta=beta, mu=mu)
-sd = egt.utils.calculate_stationary_distribution(transitions.transpose())
-
-plot = (simplex
-           .draw_triangle()
-           .add_vertex_labels(type_labels, epsilon_bottom=0.1, epsilon_top=0.03)
-           .draw_stationary_distribution(sd, alpha=1, shrink=0.5,
-                                         edgecolors='gray', cmap='binary', shading='gouraud', zorder=0)
-           .draw_gradients(zorder=2, linewidth=1.5)
-           .add_colorbar(shrink=0.5)
-          )
-
-ax.axis('off')
-ax.set_aspect('equal')
-
-plt.xlim((-.05,1.05))
-plt.ylim((-.02, simplex.top_corner + 0.05))
-```
-
-# Play - simulation
-
-```{r sim-functions}
-
-play_game <- function(list_of_learners) {
-    # Takes a list of learners, randomly pairs them
-    # computes payoffs to each learner
-    N <- length(list_of_learners)
-    pairs <- sample(1:N)
-    Ri = pairs
-    Pi = c(pairs[(N/2+1):N], pairs[1:(N/2)])
-    tibble(
-        i = pairs,
-        R = list_of_learners[Ri], 
-        P = list_of_learners[Pi]) |> 
-        left_join(payoff_df_long, by = c("R", "P")) |> 
-        arrange(i)
-}
-
-# todo - add in strat selection and intital state as param
-run_sim <- function(p, strategies, # strategies should include Label and initial W.
-                    switch_chance = 1.0, # will consider changing strategy 
-                    mutation_chance = 0.01, # extra weight added to ALL strategies - allows for mutation
-                    N = 1000,
-                    runs = 200) {
-    # running the sim
-    strat_weights <- all_strategies |> 
-        inner_join(strategies, by = "Label")
-
-    payoff_df_long <<- 
-        fetch_payoff_matrix(all_strategies$Label,
-                            p, as_df = T) |> 
-        rename(R = `Payoff to strategy:`) |> 
-        pivot_longer(-R, names_to = "P", values_to = "V")
-    
-    
-    learners <- sample(strat_weights$Label, size = N, replace = T, prob = strat_weights$W) 
-    k <- 1
-    sim.results <- tibble(
-        strategy = factor(learners, levels = strat_weights$Label)) |> 
-        count(strategy, .drop = FALSE) |> 
-        mutate(step = 0)
-    
-    while (k<=runs) {
-        game_result <- play_game(learners)
-        k <- k + 1
-        
-        # add data
-        sim.results <- bind_rows(
-            sim.results,
-            tibble(strategy = factor(learners, levels = strat_weights$Label)) |> 
-                count(strategy, .drop = FALSE) |> 
-                mutate(step = k))
-        
-        # new weights
-        strat_weights <- strat_weights |> 
-            left_join(game_result |> 
-                          group_by(R) |> 
-                          summarise(ExpV = mean(V)) |> 
-                          select(Label = R, ExpV), 
-                      by = "Label") |> 
-            mutate(W = if_else(is.na(ExpV), mutation_chance, ExpV + mutation_chance)) |> 
-            select(-ExpV)
-        
-        # resample strategies
-        maybe_switching <- sample(1:N, floor(switch_chance*N))
-        learners[maybe_switching] <- sample(strat_weights$Label, 
-                                            size = length(maybe_switching), replace = T, 
-                                            prob = pmax(strat_weights$W, 0))}
-    return(sim.results)
-    
-}
-library(ggsci)
-
-plot_sim_results <- function(sim.results) {
-    text.position <- sim.results |> 
-        filter(step > max(step) / 2) |>
-        mutate(X = max(step) + 15) |> 
-        group_by(strategy, X) |> 
-        summarise(Y = mean(n))
-    sim.results |> 
-        ggplot(aes(x = step, y = n, color = strategy, group = strategy)) +
-        geom_line() +
-        geom_text(data = text.position, aes(x = X, y = Y, label = strategy)) +
-        theme_minimal() +
-        scale_color_bmj() +
-        theme(legend.position = "none")
-}
-
-```
-
-Sim with early AI, $q=0.8,b=6$
-
-```{r}
-plot_sim_results(run_sim(
-    p = list(
-            c = 4, # cost
-            f = 5, # receive benefit
-            b = 6, # self benefit
-            q = 0.8, # LLM is 0.8 of decent feedback
-            k = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
-            a = 1 # assortment / social incentive to align strategies
-    ),
-    strategies = tibble(Label = c("TS", "CS", "FS", "FB"),
-                        W = c(1,1,1,1)),
-    switch_chance = 0.5, mutation_chance = 0.01)) +
-    geom_smooth()
-```
-
-Sim with better AI, $q=1.25,b=6$
-
-```{r}
-plot_sim_results(run_sim(
-    p = list(
-            c = 4, # cost
-            f = 5, # receive benefit
-            b = 6, # self benefit
-            q = 1.25, # LLM is 0.8 of decent feedback
-            k = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
-            a = 1 # assortment / social incentive to align strategies
-    ),
-    strategies = tibble(Label = c("TS", "CS", "FS", "FB"),
-                        W = c(1,1,1,1)),
-    switch_chance = 0.5, mutation_chance = 0.01
-)) +
-    geom_smooth()
-```
-
-Sim with better AI, $q=2,b=6$
-
-```{r}
-plot_sim_results(run_sim(
-    p = list(
-            c = 4, # cost
-            f = 5, # receive benefit
-            b = 6, # self benefit
-            q = 2, # LLM is 0.8 of decent feedback
-            k = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
-            a = 1 # assortment / social incentive to align strategies
-    ),
-    strategies = tibble(Label = c("TS", "CS", "FS", "FB"),
-                        W = c(1,1,1,1)),
-    switch_chance = 0.5, mutation_chance = 0.01
-)) +
-    geom_smooth()
-```
