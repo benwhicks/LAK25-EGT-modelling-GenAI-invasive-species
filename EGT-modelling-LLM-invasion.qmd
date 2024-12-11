@@ -61,7 +61,7 @@ We use two values, $q=0.8$ to indicate slightly worse than what the peer would p
 This adds four new strategies of genAI use (note that the paper only introduces one)
 
 -   $N$: No genAI use, $\Pi=0,\Gamma=0$.
--   $S$: Using genAI for only your own work, $\Pi=0,\Gamma=1$. This incurs an additional cost $c\times k$, but also provides a new benefit $f \times q$. 
+-   $S$: Using genAI for only your own work, $\Pi=0,\Gamma=1$. This incurs an additional cost $c\times k$, but also provides a new benefit $f \times q$.
 -   $O$: Using genAI only to provide feedback for others, $\Pi=1, \Gamma = 0$. This reduces the cost of providing feedback to $c \times k$ (as $0<k<1$), but also changes the value of the feedback to $f \times q$ instead of $f \times \Theta_P$.
 -   $B$: Using genAI for yourself and others, $\Pi=1,\Gamma=1$. This combines the effects of $S$ and $O$.
 
@@ -78,10 +78,9 @@ V(R|P) = \ &(1-\Pi_P + q\Pi_P )\Theta_Pf \ + \\
 
 It takes a bit of looking, but the above formula, for $\Gamma_R=\Pi_R=\Pi_P=0$ this formula reduces to the non-genAI scenario (note that $\Gamma_P$ is irrelevant for calculating the receivers payoff).
 
-In the paper, the parameter $\Gamma$ is omitted - it is assumed that everyone is using the same strategy for their own GenAI feedback and that this is balancing out. 
+In the paper, the parameter $\Gamma$ is omitted - it is assumed that everyone is using the same strategy for their own GenAI feedback and that this is balancing out.
 
-Furthermore, although this exploration chooses specific values of $\Theta$, $\Pi$ and $\Gamma$, the model allows for continuous versions of these strategies. 
-
+Furthermore, although this exploration chooses specific values of $\Theta$, $\Pi$ and $\Gamma$, the model allows for continuous versions of these strategies.
 
 ### Instantiating the game
 
@@ -559,8 +558,6 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-
-
 ### Increasing self benefit in genAI environment - cooperators do not use AI
 
 #### $c>b=2$
@@ -691,12 +688,6 @@ plt.xlim((-.05,1.05))
 plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
-
-
-
-
-
-
 
 ### Increasing self benefit in *superior* genAI environment - cooperators use AI
 
@@ -829,10 +820,9 @@ plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
 
-
 # Cooperation, but metered use of GenAI by cooperators
 
-Changing how much GenAI is being used by teh $CO$ strategy. So $CO.8$ is setting $\Pi=0.8$. 
+Changing how much GenAI is being used by teh $CO$ strategy. So $CO.8$ is setting $\Pi=0.8$.
 
 #### With AI and $c<b=6$
 
@@ -1005,4 +995,3 @@ plt.xlim((-.05,1.05))
 plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
-
