@@ -313,6 +313,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TN", "CN", "FN")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-N", "C-N", "F-N")
 ```
 
 ```{python}
@@ -355,6 +356,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TN", "CN", "FN")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-N", "C-N", "F-N")
 ```
 
 ```{python}
@@ -397,6 +399,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TN", "CN", "FN")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-N", "C-N", "F-N")
 ```
 
 ```{python}
@@ -442,6 +445,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CO", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-AI", "F-AI") # renaming for plot
 ```
 
 ```{python}
@@ -485,6 +489,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CO", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-AI", "F-AI") # renaming for plot
 ```
 
 ```{python}
@@ -528,6 +533,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CO", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-AI", "F-AI") # renaming for plot
 ```
 
 ```{python}
@@ -573,6 +579,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CN", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-N", "F-AI") # renaming for plot
 ```
 
 ```{python}
@@ -616,6 +623,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CN", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-N", "F-AI") # renaming for plot
 ```
 
 ```{python}
@@ -659,6 +667,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CN", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-N", "F-AI") # renaming for plot
 ```
 
 ```{python}
@@ -704,6 +713,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CO", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-AI", "F-AI")
 ```
 
 ```{python}
@@ -747,6 +757,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CO", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-AI", "F-AI")
 ```
 
 ```{python}
@@ -790,6 +801,7 @@ glimpse(p)
 ```{r}
 strategies <- c("TO", "CO", "FO")
 payoffs_M <- fetch_payoff_matrix(strategies, p, as_df = F)
+strategies <- c("T-AI", "C-AI", "F-AI")
 ```
 
 ```{python}
@@ -1234,7 +1246,12 @@ for (i in 2:N_sims) {
     d.results <- bind_rows(d.results, d.results.new)
 }
 
-d.results |> head()
+d.results |> 
+    slice(3:16) |> 
+    mutate(pCT = pC + pT) |> 
+    select(f, b, q, pCT, Pi_bar, W) |> 
+    head() |> 
+    round(2)
 ```
 
 
