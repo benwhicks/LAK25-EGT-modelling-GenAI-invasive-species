@@ -995,3 +995,282 @@ plt.xlim((-.05,1.05))
 plt.ylim((-.02, simplex.top_corner + 0.05))
 plt.show()
 ```
+
+
+# Simulating data
+
+The idea here is to generate a data set that might match, partially, with what is observable in a classroom setting. 
+
+## Potential tangible data
+
+- The change in cooperation. So not the exact mix of strategies, but the overall direction of total / average cooperative effort.
+- Potentially individual cooperative effort, with high error (i.e. number of peer feedbacks provided - probably no way to tell between T and C strategies though)
+- An estimate of GenAI use. 
+- A given number of interactions - these changes are observed over N numbers of peer feedback interactions. 
+- Academic improvement. Under the assumption that more benefit from more effort in the peer feedback process. 
+
+## Intangible data to generate
+
+Effectively we can generate a simulated prior distribution of data to draw from in a Bayesian framework.  
+
+Fixed for data generation:
+- Population size (number students), $N_S=100$
+- Number of peer feedback interactions, $N_F=5$
+- Chance of switching to partners strategy, if it resulted in a higher payoff, $\psi=0.5$
+- Chance of changing strategy (mutation): $\mu = 0.01$ to any available strategy.
+- Not using, but it would be interesting to have a parameter that is a chance that they choose the same partner for the next feedback round. 
+
+Prior distributions
+- Prior distribution of environment parameters (could be informed by expert). Note that fixing one is fine (e.g. fix c = 4) as this is just scaling. 
+- Prior distribution of strategies (probably uniformed)
+- Prior distribution of AI / no AI
+- Initial distribution of strategies, C, T, F, for -N and -AI/O
+
+Simulation
+- Run simulation on $N_F$ interactions, tracking changes in distribution of strategies
+
+Computed metrics
+- Overall fitness of population at each step (average payoff)
+- Average cooperative behaviour ($\bar{\Theta}$)
+- Average AI use ($\bar{\Pi}$)
+
+``` {r simulation-functions}
+N_S <- 100 # number of students
+N_F <- 5 # number of feedback iterations (games played)
+switch_p <- 0.5 # chance of changing strategy, if feedback partner benefited more
+
+strategies <- 
+    tibble(Label = c("CN", "TN", "FN", "CO", "TO"),
+           W = c(2,1,1,2,1))
+
+# testing
+# strategies <- 
+#     tibble(Label = c("CN", "FN"),
+#            W = c(1,1))
+
+play_game <- function(list_of_learners) {
+    # Takes a list of learners, randomly pairs them
+    # computes payoffs to each learner
+    N <- length(list_of_learners)
+    pairs <- sample(1:N)
+    Ri = pairs
+    Pi = c(pairs[(N/2+1):N], pairs[1:(N/2)])
+    tibble(
+        id = pairs,
+        R = list_of_learners[Ri], 
+        P = list_of_learners[Pi]) |> 
+        left_join(payoff_df_long, by = c("R", "P")) |> 
+        arrange(id)
+}
+
+run_sim <- function(
+        p, 
+        strategies, # strategies should include Label and initial W.
+        switch_chance = 0.5, # will consider changing strategy 
+        mutation_chance = 0.02, # extra weight added to ALL strategies but weighted by the average fitness of the last round - allows for mutation
+        N = 100,
+        runs = 5) {
+    # running the sim
+    strat_weights <- all_strategies |> 
+        inner_join(strategies, by = "Label")
+
+    payoff_df_long <<- 
+        fetch_payoff_matrix(strategies$Label,
+                            p, as_df = T) |> 
+        rename(R = `Payoff to strategy:`) |> 
+        pivot_longer(-R, names_to = "P", values_to = "V")
+    
+    payoff_df_long <<- inner_join(
+        payoff_df_long,
+        payoff_df_long |> 
+            mutate(oldR = R, oldP = P) |> 
+            select(-R, -P) |> 
+            select(R = oldP, P = oldR, oppV = V),
+        by = c("R", "P")
+    ) |> 
+        mutate(opponent_better_off = oppV > V)
+    
+    learners <- sample(strat_weights$Label, 
+                       size = N, replace = T, 
+                       prob = strat_weights$W) 
+    k <- 0
+    sim.results <- tibble(
+        id = 1:length(learners),
+        strategy = factor(learners, levels = strat_weights$Label)) |> 
+        mutate(step = 0, V = 0, opponent_better_off = FALSE)
+    
+    while (k<=runs) {
+        game_result <- play_game(learners)
+        k <- k + 1
+        
+        # add data
+        sim.results <- bind_rows(
+            sim.results,
+            game_result |> 
+                mutate(step = k) |> 
+                select(id, step, strategy = R, V, opponent_better_off)
+            )
+        
+        # New weights - based on whole population fitness
+        new_strat_weights <- 
+            game_result |> 
+            group_by(R) |> 
+            summarise(V = mean(V)) |> 
+            rename(strategy = R)
+        
+        # new strategies
+        learners <- 
+            game_result |> 
+            mutate(probs = runif(nrow(game_result)),
+                   mutation_strat = sample(new_strat_weights$strategy, 
+                                           nrow(game_result),
+                                           replace = T,
+                                           prob = 1 + new_strat_weights$V - min(new_strat_weights$V))) |> 
+            mutate(mutate = probs < mutation_chance,
+                   switch = probs > (1 - switch_chance) & opponent_better_off) |> 
+            mutate(strategy = case_when(
+                mutate ~ mutation_strat,
+                switch ~ P,
+                TRUE ~ R
+            )) |> 
+            pull(strategy)
+            
+    }
+    sim.results <- bind_cols(
+        tibble(f = p$f[[1]], a = p$a, b = p$b, c = p$c, q = p$q, k = p$k, mu = mutation_chance, psi = switch_chance), 
+        sim.results)
+    return(sim.results)
+    
+}
+
+summarise_sim <- function(sim.results) {
+    sim.results |> 
+        inner_join(all_strategies |> rename(strategy = Label), by = "strategy") |> 
+        group_by(f, b, c, a, q, k, mu, psi, step) |> 
+        summarise(
+            W = mean(V),
+            Theta_bar = mean(Eff),
+            Pi_bar = mean(AIP),
+            pC = mean(str_detect(strategy, "C")),
+            pT = mean(str_detect(strategy, "T")),
+            pF = mean(str_detect(strategy, "F")),
+            .groups = "drop"
+            # Theta_sd = sd(Eff),
+            # Pi_sd = sd(AIP),
+        ) 
+}
+
+delta_of_sim_summary <- function(d) {
+    d.p <- d |> select(f, b, c, a, q, k, mu, psi) |> slice(1)
+    diff.d <- 
+        d |> 
+        select(W, pC, pT, pF, Theta_bar, Pi_bar)
+    bind_cols(d.p,
+              slice(diff.d, nrow(diff.d)) - slice(diff.d, 2)
+              )
+    
+}
+
+```
+
+Running a single sim, and computing the **changes** in:
+
+- Overall fitness $W$
+- Proportions of $C$, $T$ and $F$ strategies
+- Average cooperation effort $Theta_bar$
+- Average use of GenAI $Pi_bar$
+
+``` {r}
+run_sim(
+    p = list(
+            c = 4, # cost
+            f = 5, # receive benefit
+            b = 4, # self benefit
+            q = 0.8, # LLM is 0.8 of decent feedback
+            k = 0.1, # reduces cost of giving fb by this, but also reduces self benefit
+            a = 1 # assortment / social incentive to align strategies
+    ),
+    strategies = tibble(Label = c("CO", "TO", "FN", "CN", "TN"),
+                        W = c(1,1,2,1,1)),
+    switch_chance = 0.2, mutation_chance = 0.6) |> 
+    summarise_sim() |> 
+    delta_of_sim_summary()
+
+```
+
+This can then be repeated for a range of parameter values, and the results combined to form a joint distribution of these parameters
+
+``` {r}
+sample_parameters <- function(){
+    p <<- list(
+        c = 4,
+        f = runif(1, 4.5, 5.4),
+        b = runif(1, 2, 6),
+        q = runif(1, 0.6, 1.2),
+        k = runif(1, 0.05, 0.15),
+        a = runif(1, 0.8, 1.2)
+    )
+    strats_weighted <<- tibble(Label = c("CO", "TO", "FN", "CN", "TN"),
+                        W = c(1,1,2,1,1))
+    mu <<- runif(1, 0.7, 0.8)
+    psi <<- runif(1, 0.2, 0.5)
+}
+
+set.seed(303)
+N_sims <- 500
+# doing first one
+sample_parameters()
+d.results <- run_sim(p = p, strategies = strats_weighted, switch_chance = psi, mutation_chance = mu) |> 
+    summarise_sim() |> 
+    delta_of_sim_summary() |> 
+    mutate(mu = mu, psi = psi)
+
+for (i in 2:N_sims) {
+    sample_parameters()
+    d.results.new <- run_sim(p = p, strategies = strats_weighted, switch_chance = psi, mutation_chance = mu) |> 
+        summarise_sim() |> 
+        delta_of_sim_summary() |> 
+        mutate(mu = mu, psi = psi)
+    d.results <- bind_rows(d.results, d.results.new)
+}
+
+d.results |> head()
+```
+
+
+We can now (with a small number) view part of the joint distribution, say between the overall cooperation fitness ($W$) and the level of cooperative effort ($\bar{\Theta}$) and GenAI use ($\bar{\Pi}$)
+
+``` {r}
+d.results |> 
+    ggplot(aes(x = pC + pT, y = W, color = Pi_bar)) +
+    geom_vline(xintercept = 0) +
+    geom_hline(yintercept = 0) +
+    geom_point(size = 3, alpha = 0.8) +
+    viridis::scale_color_viridis(name = "Change in GenAI use") +
+    theme_minimal() +
+    xlab("Change in Cooperator proportion") +
+    ylab("Change in average feedback value") +
+    theme(legend.position = "bottom")
+```
+
+Or look at the correlations between the simulated data:
+
+``` {r}
+d.results |> 
+    select(f,b,a,q,k, Theta_bar, Pi_bar) |> 
+    cor() |> 
+    corrplot::corrplot(type = "upper", diag = FALSE)
+
+#todo: the network approach might be nicer here??
+
+
+```
+
+
+Other thoughts:
+- Computed aggregation of those strategies - mean, sd, of key parameters. These are not observable but might be more easily relatable to compute changes - such as a move towards more cooperation
+- Distribution of environment parameters: these might be informed by expert as a part of prior elicitation perhaps
+- Aggregation of environment parameters: easier to understand? so b-c instead of just b, 
+- Computation of N runs of simulation. 
+- Evolution of strat
+
