@@ -1278,16 +1278,18 @@ d.results |>
     cor() |> 
     corrplot::corrplot(type = "upper", diag = FALSE)
 
+d.results |> 
+    select(f,b,a,q,k, Theta_bar, Pi_bar) |> 
+    cor() |> 
+    corrplot::corrplot(type = "upper", diag = FALSE)
+
 #todo: the network approach might be nicer here??
 
 
 ```
 
 
-Other thoughts:
-- Computed aggregation of those strategies - mean, sd, of key parameters. These are not observable but might be more easily relatable to compute changes - such as a move towards more cooperation
-- Distribution of environment parameters: these might be informed by expert as a part of prior elicitation perhaps
-- Aggregation of environment parameters: easier to understand? so b-c instead of just b, 
-- Computation of N runs of simulation. 
-- Evolution of strat
+# Other thoughts
 
+- Distribution of environment parameters: these might be informed by expert as a part of prior elicitation perhaps
+- Aggregation of environment parameters: easier to understand? so b-c instead of just b?
