@@ -76,7 +76,7 @@ $$V(R|P) = (1-\Gamma_R)[\Pi_P q f + (1-\Pi_P)\Theta_P f] \\
 
 Where $a[RP]$ returns the value of $a$ is $\Pi_R=\Pi_P$ and $\Theta_R=\Theta_P$, and zero otherwise.
 
-It takes a bit of looking, but the above formula, for $\Gamma_R=\Pi_R=\Pi_P=0$ this formula reduces to the non-genAI scenario (note that $\Gamma_P$ is irrelevant for calculating the receivers payoff). 
+It takes a bit of looking, but the above formula, for $\Gamma_R=\Pi_R=\Pi_P=0$ this formula reduces to the non-genAI scenario (note that $\Gamma_P$ is irrelevant for calculating the receivers payoff).
 
 ### Playing with notation
 
@@ -96,10 +96,9 @@ $$V(R|P) = ((1-\Pi_P + q\Pi_P )\Theta_P + q)f \\
 - ((1 - \Pi_R + \Pi_R k)\Theta_R + k)c \\
 + (1-|\Theta_R-\Theta_P|)a$$
 
-
 ### Instantiating the game
 
-The  game is instatiated in the code below:
+The game is instatiated in the code below:
 
 ```{r creating-game}
 library(tidyverse)
