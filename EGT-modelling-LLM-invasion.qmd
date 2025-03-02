@@ -1278,15 +1278,15 @@ d.results |>
     cor() |> 
     corrplot::corrplot(type = "upper", diag = FALSE)
 
-d.results |> 
-    select(f,b,a,q,k, Theta_bar, Pi_bar) |> 
-    cor() |> 
-    corrplot::corrplot(type = "upper", diag = FALSE)
-
 #todo: the network approach might be nicer here??
 
 
 ```
+
+# Animations
+
+For pres. 
+
 
 
 # Other thoughts
