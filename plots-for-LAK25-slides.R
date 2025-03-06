@@ -298,6 +298,29 @@ plot_phases <- function(p.p, heat = TRUE,
 
 
 # Creating a list of parameter settings
+N <- 51
+Increment <- 4 / (N-1) 
+pstart <- list(
+    c = 4, # cost
+    f = 5, # receive benefit
+    b = 2, # self benefit
+    q = 2, # Value from AI
+    k = 0.1, # Cost of using AI
+    a = 1.5, # assortment
+    gamma = 0.0 # switching AI use to global param
+)
+plist.noai <- list()
+for (i in 1:N) { # up b
+    plist.noai[[i]] <- pstart
+    pstart$b <- pstart$b + Increment
+}
+pstart <- plist.noai[[N]]
+for (i in 1:N) { # down b
+    plist.noai[[i + N]] <- pstart
+    pstart$b <- pstart$b - Increment
+}
+
+
 N <- 31
 Increment <- 4 / (N-1) 
 pstart <- list(
@@ -357,5 +380,6 @@ animate_parameter_list <- function(plist, filename,
 
 # animate_parameter_list(plist, "annoai.gif", T, F)
 
+animate_parameter_list(plist.noai, "annoai.gif", T, T, fps = 20, 1.9)
 animate_parameter_list(plist, "angenai.gif", T, T, fps = 25, 2)
 animate_parameter_list(plist, "angenai.long.gif", T, T, fps = 20, 1.9)
