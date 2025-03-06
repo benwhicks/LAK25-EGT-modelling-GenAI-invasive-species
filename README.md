@@ -1,7 +1,7 @@
 # Game-theoretic models of intangible learning data
 
 The idea for this modelling experiment was to model genAI as an invasive species into peer-feedback learning environments.
-This work was published at LAK25 as [Game theoretic models of intangible learning data](https://dl-acm-org.ezproxy.lib.uts.edu.au/doi/10.1145/3706468.3706557).
+This work was published at LAK25 as [Game theoretic models of intangible learning data](https://dl.acm.org/doi/10.1145/3706468.3706557).
 
 ## Supplementary materials
 
