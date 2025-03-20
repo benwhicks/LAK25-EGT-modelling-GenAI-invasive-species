@@ -2,6 +2,7 @@
 
 library(EvolutionaryGames)
 library(tidyverse)
+library(magick) # for animation
 
 get_payoff <- function(
         # Strat_r: Receiving strat, Strat_p: Providing strat
